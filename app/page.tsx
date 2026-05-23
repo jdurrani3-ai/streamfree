@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface Movie {
   id: string;
@@ -16,8 +16,81 @@ interface Movie {
 
 type DurationFilter = 'any' | 'under90' | '90to120' | 'over120';
 
+const FEATURED = [
+  {
+    id: 'FlOra-dwLzg',
+    title: 'Wrath of Man',
+    description: 'A mysterious new security guard for a cash truck company reveals a dangerous hidden agenda driven by revenge.',
+    rating: 'R',
+    duration: '1h 59m',
+  },
+  {
+    id: 'BqluXcZ9RyU',
+    title: 'Honest Thief',
+    description: 'A bank robber tries to go straight for the woman he loves but is double-crossed by two corrupt FBI agents.',
+    rating: 'PG-13',
+    duration: '1h 39m',
+  },
+  {
+    id: 'SebuC1iyhug',
+    title: 'First Blood',
+    description: 'A Vietnam vet drifts into a small town and is pushed too far by a psychotic sheriff. The original Rambo.',
+    rating: 'R',
+    duration: '1h 33m',
+  },
+  {
+    id: 'AaJyi4z4JHw',
+    title: 'London Has Fallen',
+    description: 'In London for the PM funeral, a secret service agent uncovers a plot to assassinate the world\'s leaders.',
+    rating: 'R',
+    duration: '1h 39m',
+  },
+  {
+    id: 'nzn1m-hbPYw',
+    title: 'Bumblebee',
+    description: 'On the run in 1987, Bumblebee finds refuge in a small beach town where a young woman discovers his secret.',
+    rating: 'PG-13',
+    duration: '1h 54m',
+  },
+  {
+    id: 'K4zHXPQApic',
+    title: 'The Chronicles of Riddick',
+    description: 'Vin Diesel stars in this electrifying sci-fi spectacular — a fugitive warrior battles a ruthless civilization.',
+    rating: 'PG-13',
+    duration: '1h 59m',
+  },
+  {
+    id: 'naG_MI5dsbo',
+    title: 'Payback',
+    description: 'Left for dead after a heist, a man returns to the criminal underworld seeking the money that was stolen from him.',
+    rating: 'R',
+    duration: '1h 40m',
+  },
+  {
+    id: 'kgIjLBjyvNM',
+    title: 'Death Wish',
+    description: 'A mild-mannered doctor becomes a vigilante after his wife and daughter are brutally attacked in their home.',
+    rating: 'R',
+    duration: '1h 47m',
+  },
+  {
+    id: '6-JkDTqFLEQ',
+    title: 'Hellboy II: The Golden Army',
+    description: 'A ruthless prince awakens an unstoppable army of ancient creatures and wages war against humanity.',
+    rating: 'PG-13',
+    duration: '2h',
+  },
+  {
+    id: 'gNK-Yr8ktgM',
+    title: 'The Spy Next Door',
+    description: 'Jackie Chan stars as a spy who must babysit his neighbor\'s unruly kids after they accidentally blow his cover.',
+    rating: 'PG',
+    duration: '1h 34m',
+  },
+];
+
 const GENRES = [
- { name: 'Action', emoji: '💥', query: 'action' },
+  { name: 'Action', emoji: '💥', query: 'action' },
   { name: 'Comedy', emoji: '😂', query: 'comedy' },
   { name: 'Drama', emoji: '🎭', query: 'drama' },
   { name: 'Horror', emoji: '👻', query: 'horror' },
@@ -39,6 +112,21 @@ const DURATION_FILTERS = [
   { key: 'under90' as DurationFilter, label: 'Under 90 min' },
   { key: '90to120' as DurationFilter, label: '90–120 min' },
   { key: 'over120' as DurationFilter, label: '2+ hours' },
+];
+
+const CHANNELS = [
+  { name: 'Paramount+', short: 'P+', color: 'bg-blue-600', url: 'https://www.paramountplus.com' },
+  { name: 'Showtime', short: 'SHO', color: 'bg-red-600', url: 'https://www.showtime.com' },
+  { name: 'Starz', short: 'STARZ', color: 'bg-zinc-700', url: 'https://www.starz.com' },
+  { name: 'AMC+', short: 'AMC+', color: 'bg-red-900', url: 'https://www.amcplus.com' },
+  { name: 'MGM+', short: 'MGM+', color: 'bg-blue-900', url: 'https://www.mgmplus.com' },
+  { name: 'Peacock', short: '🦚', color: 'bg-purple-700', url: 'https://www.peacocktv.com' },
+  { name: 'BritBox', short: 'BB', color: 'bg-blue-700', url: 'https://www.britbox.com' },
+  { name: 'Apple TV+', short: 'TV+', color: 'bg-zinc-800', url: 'https://tv.apple.com' },
+  { name: 'Shudder', short: 'SHD', color: 'bg-green-900', url: 'https://www.shudder.com' },
+  { name: 'ViX', short: 'ViX', color: 'bg-orange-500', url: 'https://www.vix.com' },
+  { name: 'Acorn TV', short: 'ACN', color: 'bg-green-700', url: 'https://acorn.tv' },
+  { name: 'Criterion', short: 'CC', color: 'bg-stone-800', url: 'https://www.criterionchannel.com' },
 ];
 
 const RATING_COLORS: Record<string, string> = {
@@ -72,6 +160,16 @@ export default function Home() {
   const [durationFilter, setDurationFilter] = useState<DurationFilter>('any');
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [featuredIndex, setFeaturedIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFeaturedIndex((prev) => (prev + 1) % FEATURED.length);
+    }, 8000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const featured = FEATURED[featuredIndex];
 
   const filteredMovies = movies.filter((movie) => {
     if (durationFilter === 'any') return true;
@@ -149,10 +247,49 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-12">
+      <main className="max-w-7xl mx-auto px-6 py-8">
+
+        {/* Hero Banner */}
+        <div className="relative w-full h-[60vh] mb-12 rounded-2xl overflow-hidden">
+          <div
+            className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
+            style={{ backgroundImage: `url(https://i.ytimg.com/vi/${featured.id}/maxresdefault.jpg)` }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+
+          <div className="absolute bottom-0 left-0 p-8 max-w-lg">
+            <span className={`text-white text-xs font-bold px-2 py-1 rounded mb-4 inline-block ${RATING_COLORS[featured.rating] || 'bg-gray-600'}`}>
+              {featured.rating}
+            </span>
+            <h2 className="text-4xl font-bold mb-2 leading-tight">{featured.title}</h2>
+            <p className="text-sm text-white/50 mb-3">{featured.duration} • Free on YouTube</p>
+            <p className="text-sm text-white/70 mb-6 line-clamp-3">{featured.description}</p>
+            <a
+              href={`https://www.youtube.com/watch?v=${featured.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-white text-black px-6 py-3 rounded-xl font-bold hover:bg-white/90 transition-all"
+            >
+              ▶ Watch Free
+            </a>
+          </div>
+
+          <div className="absolute bottom-8 right-8 flex gap-2 items-center">
+            {FEATURED.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setFeaturedIndex(i)}
+                className={`h-2 rounded-full transition-all duration-300 ${i === featuredIndex ? 'bg-white w-6' : 'bg-white/40 w-2'}`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* AI Search */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-3">What do you want to watch?</h1>
-          <p className="text-white/50 mb-8">Describe it in plain English — AI finds it free on YouTube</p>
+          <h1 className="text-3xl font-bold mb-3">What do you want to watch?</h1>
+          <p className="text-white/50 mb-6">Describe it in plain English — AI finds it free on YouTube</p>
           <div className="flex gap-3 max-w-2xl mx-auto">
             <input
               type="text"
@@ -172,26 +309,27 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="mb-12">
+        {/* Browse by Genre */}
+        <div className="mb-8">
           <h2 className="text-lg font-semibold text-white/60 mb-4">Browse by Genre</h2>
           <div className="flex flex-wrap gap-3">
             <button
-  onClick={() => {
-    setActiveGenre('');
-    setMovies([]);
-    setSearchedFor('');
-    setDurationFilter('any');
-    setExpandedId(null);
-    setQuery('');
-  }}
-  className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all ${
-    activeGenre || searchedFor
-      ? 'border-white/40 bg-white/10 hover:bg-white/20 text-white/80'
-      : 'border-white/10 bg-transparent text-white/20 cursor-default'
-  }`}
->
-  <span className="text-sm font-medium">✕ Reset</span>
-</button>
+              onClick={() => {
+                setActiveGenre('');
+                setMovies([]);
+                setSearchedFor('');
+                setDurationFilter('any');
+                setExpandedId(null);
+                setQuery('');
+              }}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all ${
+                activeGenre || searchedFor
+                  ? 'border-white/40 bg-white/10 hover:bg-white/20 text-white/80'
+                  : 'border-white/10 bg-transparent text-white/20 cursor-default'
+              }`}
+            >
+              <span className="text-sm font-medium">✕ Reset</span>
+            </button>
             {GENRES.map((genre) => (
               <button
                 key={genre.name}
@@ -205,6 +343,28 @@ export default function Home() {
                 <span>{genre.emoji}</span>
                 <span className="text-sm font-medium">{genre.name}</span>
               </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Premium Channels */}
+        <div className="mb-12">
+          <h2 className="text-lg font-semibold text-white/60 mb-4">Premium Channels</h2>
+          <div className="flex gap-6 overflow-x-auto pb-3">
+            {CHANNELS.map((channel) => (
+              <a
+                key={channel.name}
+                href={channel.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-col items-center gap-2 min-w-[72px] group"
+              >
+                <div className={`w-16 h-16 rounded-full ${channel.color} border-2 border-white/10 group-hover:border-purple-500 transition-all flex items-center justify-center`}>
+                  <span className="text-white text-sm font-bold text-center leading-tight px-1">{channel.short}</span>
+                </div>
+                <span className="text-xs text-white/50 group-hover:text-white/80 text-center whitespace-nowrap">{channel.name}</span>
+                <span className="text-xs text-green-400 group-hover:text-green-300">Try now</span>
+              </a>
             ))}
           </div>
         </div>
@@ -247,23 +407,23 @@ export default function Home() {
                 <div key={movie.id} className="group">
                   <a href={movie.youtubeUrl} target="_blank" rel="noopener noreferrer">
                     <div
-  className="relative overflow-hidden rounded-xl bg-white/5 border border-white/10 group-hover:border-purple-500/50 transition-all group-hover:scale-105"
-  onMouseEnter={() => setHoveredId(movie.id)}
-  onMouseLeave={() => setHoveredId(null)}
->
+                      className="relative overflow-hidden rounded-xl bg-white/5 border border-white/10 group-hover:border-purple-500/50 transition-all group-hover:scale-105"
+                      onMouseEnter={() => setHoveredId(movie.id)}
+                      onMouseLeave={() => setHoveredId(null)}
+                    >
                       {hoveredId === movie.id ? (
-  <iframe
-    src={`https://www.youtube.com/embed/${movie.id}?autoplay=1&mute=1&start=60&end=75&controls=0&modestbranding=1&rel=0`}
-    className="w-full aspect-video"
-    allow="autoplay; encrypted-media"
-  />
-) : movie.thumbnail ? (
-  <img src={movie.thumbnail} alt={movie.title} className="w-full aspect-video object-cover" />
-) : (
-  <div className="w-full aspect-video bg-white/10 flex items-center justify-center">
-    <span className="text-4xl">🎬</span>
-  </div>
-)}
+                        <iframe
+                          src={`https://www.youtube.com/embed/${movie.id}?autoplay=1&mute=1&start=60&end=75&controls=0&modestbranding=1&rel=0`}
+                          className="w-full aspect-video"
+                          allow="autoplay; encrypted-media"
+                        />
+                      ) : movie.thumbnail ? (
+                        <img src={movie.thumbnail} alt={movie.title} className="w-full aspect-video object-cover" />
+                      ) : (
+                        <div className="w-full aspect-video bg-white/10 flex items-center justify-center">
+                          <span className="text-4xl">🎬</span>
+                        </div>
+                      )}
                       <div className="absolute top-2 left-2 flex gap-1">
                         {movie.rating && (
                           <span className={`text-white text-xs font-bold px-1.5 py-0.5 rounded ${RATING_COLORS[movie.rating] || 'bg-gray-600'}`}>
