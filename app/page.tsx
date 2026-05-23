@@ -14,79 +14,46 @@ interface Movie {
   youtubeUrl: string;
 }
 
+interface PickResult {
+  id: string;
+  title: string;
+  reason: string;
+  rating: string | null;
+  duration: string | null;
+  thumbnail: string;
+  youtubeUrl: string;
+}
+
 type DurationFilter = 'any' | 'under90' | '90to120' | 'over120';
 
 const FEATURED = [
-  {
-    id: 'FlOra-dwLzg',
-    title: 'Wrath of Man',
-    description: 'A mysterious new security guard for a cash truck company reveals a dangerous hidden agenda driven by revenge.',
-    rating: 'R',
-    duration: '1h 59m',
-  },
-  {
-    id: 'BqluXcZ9RyU',
-    title: 'Honest Thief',
-    description: 'A bank robber tries to go straight for the woman he loves but is double-crossed by two corrupt FBI agents.',
-    rating: 'PG-13',
-    duration: '1h 39m',
-  },
-  {
-    id: 'SebuC1iyhug',
-    title: 'First Blood',
-    description: 'A Vietnam vet drifts into a small town and is pushed too far by a psychotic sheriff. The original Rambo.',
-    rating: 'R',
-    duration: '1h 33m',
-  },
-  {
-    id: 'AaJyi4z4JHw',
-    title: 'London Has Fallen',
-    description: 'In London for the PM funeral, a secret service agent uncovers a plot to assassinate the world\'s leaders.',
-    rating: 'R',
-    duration: '1h 39m',
-  },
-  {
-    id: 'nzn1m-hbPYw',
-    title: 'Bumblebee',
-    description: 'On the run in 1987, Bumblebee finds refuge in a small beach town where a young woman discovers his secret.',
-    rating: 'PG-13',
-    duration: '1h 54m',
-  },
-  {
-    id: 'K4zHXPQApic',
-    title: 'The Chronicles of Riddick',
-    description: 'Vin Diesel stars in this electrifying sci-fi spectacular — a fugitive warrior battles a ruthless civilization.',
-    rating: 'PG-13',
-    duration: '1h 59m',
-  },
-  {
-    id: 'naG_MI5dsbo',
-    title: 'Payback',
-    description: 'Left for dead after a heist, a man returns to the criminal underworld seeking the money that was stolen from him.',
-    rating: 'R',
-    duration: '1h 40m',
-  },
-  {
-    id: 'kgIjLBjyvNM',
-    title: 'Death Wish',
-    description: 'A mild-mannered doctor becomes a vigilante after his wife and daughter are brutally attacked in their home.',
-    rating: 'R',
-    duration: '1h 47m',
-  },
-  {
-    id: '6-JkDTqFLEQ',
-    title: 'Hellboy II: The Golden Army',
-    description: 'A ruthless prince awakens an unstoppable army of ancient creatures and wages war against humanity.',
-    rating: 'PG-13',
-    duration: '2h',
-  },
-  {
-    id: 'gNK-Yr8ktgM',
-    title: 'The Spy Next Door',
-    description: 'Jackie Chan stars as a spy who must babysit his neighbor\'s unruly kids after they accidentally blow his cover.',
-    rating: 'PG',
-    duration: '1h 34m',
-  },
+  { id: 'FlOra-dwLzg', title: 'Wrath of Man', description: 'A mysterious new security guard for a cash truck company reveals a dangerous hidden agenda driven by revenge.', rating: 'R', duration: '1h 59m' },
+  { id: 'BqluXcZ9RyU', title: 'Honest Thief', description: 'A bank robber tries to go straight for the woman he loves but is double-crossed by two corrupt FBI agents.', rating: 'PG-13', duration: '1h 39m' },
+  { id: 'SebuC1iyhug', title: 'First Blood', description: 'A Vietnam vet drifts into a small town and is pushed too far by a psychotic sheriff. The original Rambo.', rating: 'R', duration: '1h 33m' },
+  { id: 'AaJyi4z4JHw', title: 'London Has Fallen', description: 'In London for the PM funeral, a secret service agent uncovers a plot to assassinate the world\'s leaders.', rating: 'R', duration: '1h 39m' },
+  { id: 'nzn1m-hbPYw', title: 'Bumblebee', description: 'On the run in 1987, Bumblebee finds refuge in a small beach town where a young woman discovers his secret.', rating: 'PG-13', duration: '1h 54m' },
+  { id: 'K4zHXPQApic', title: 'The Chronicles of Riddick', description: 'Vin Diesel stars in this electrifying sci-fi spectacular — a fugitive warrior battles a ruthless civilization.', rating: 'PG-13', duration: '1h 59m' },
+  { id: 'naG_MI5dsbo', title: 'Payback', description: 'Left for dead after a heist, a man returns to the criminal underworld seeking the money stolen from him.', rating: 'R', duration: '1h 40m' },
+  { id: 'kgIjLBjyvNM', title: 'Death Wish', description: 'A mild-mannered doctor becomes a vigilante after his wife and daughter are brutally attacked in their home.', rating: 'R', duration: '1h 47m' },
+  { id: '6-JkDTqFLEQ', title: 'Hellboy II: The Golden Army', description: 'A ruthless prince awakens an unstoppable army of ancient creatures and wages war against humanity.', rating: 'PG-13', duration: '2h' },
+  { id: 'gNK-Yr8ktgM', title: 'The Spy Next Door', description: 'Jackie Chan stars as a spy who must babysit his neighbor\'s unruly kids after they accidentally blow his cover.', rating: 'PG', duration: '1h 34m' },
+];
+
+const FREE_MOVIES_CATALOG = [
+  { id: 'FlOra-dwLzg', title: 'Wrath of Man', genre: 'action thriller revenge', rating: 'R', duration: '1h 59m' },
+  { id: 'BqluXcZ9RyU', title: 'Honest Thief', genre: 'action romance crime', rating: 'PG-13', duration: '1h 39m' },
+  { id: 'SebuC1iyhug', title: 'First Blood', genre: 'action drama intense', rating: 'R', duration: '1h 33m' },
+  { id: 'AaJyi4z4JHw', title: 'London Has Fallen', genre: 'action thriller political', rating: 'R', duration: '1h 39m' },
+  { id: 'nzn1m-hbPYw', title: 'Bumblebee', genre: 'sci-fi family adventure fun', rating: 'PG-13', duration: '1h 54m' },
+  { id: 'K4zHXPQApic', title: 'The Chronicles of Riddick', genre: 'sci-fi action epic', rating: 'PG-13', duration: '1h 59m' },
+  { id: 'naG_MI5dsbo', title: 'Payback', genre: 'crime action dark revenge', rating: 'R', duration: '1h 40m' },
+  { id: 'kgIjLBjyvNM', title: 'Death Wish', genre: 'action crime vigilante intense', rating: 'R', duration: '1h 47m' },
+  { id: '6-JkDTqFLEQ', title: 'Hellboy II: The Golden Army', genre: 'fantasy action dark humor', rating: 'PG-13', duration: '2h' },
+  { id: 'gNK-Yr8ktgM', title: 'The Spy Next Door', genre: 'comedy action family light fun', rating: 'PG', duration: '1h 34m' },
+  { id: 'EMvIgNcej-w', title: 'Blitz', genre: 'crime thriller dark gritty', rating: 'R', duration: '1h 37m' },
+  { id: 'mAVs05GzChs', title: 'Evolution', genre: 'sci-fi comedy light fun', rating: 'PG-13', duration: '1h 41m' },
+  { id: 'fzfMsnqD-yM', title: 'Survivor', genre: 'action thriller suspense', rating: 'PG-13', duration: '1h 36m' },
+  { id: 'dygYCbG-jNk', title: 'A-X-L', genre: 'sci-fi family adventure heartwarming', rating: 'PG', duration: '1h 38m' },
 ];
 
 const GENRES = [
@@ -130,15 +97,9 @@ const CHANNELS = [
 ];
 
 const RATING_COLORS: Record<string, string> = {
-  'G': 'bg-green-600',
-  'PG': 'bg-blue-600',
-  'PG-13': 'bg-yellow-600',
-  'R': 'bg-red-600',
-  'NC-17': 'bg-red-800',
-  'TV-G': 'bg-green-600',
-  'TV-PG': 'bg-blue-600',
-  'TV-14': 'bg-yellow-600',
-  'TV-MA': 'bg-red-600',
+  'G': 'bg-green-600', 'PG': 'bg-blue-600', 'PG-13': 'bg-yellow-600',
+  'R': 'bg-red-600', 'NC-17': 'bg-red-800', 'TV-G': 'bg-green-600',
+  'TV-PG': 'bg-blue-600', 'TV-14': 'bg-yellow-600', 'TV-MA': 'bg-red-600',
 };
 
 function formatDuration(minutes: number | null): string {
@@ -161,6 +122,7 @@ export default function Home() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [featuredIndex, setFeaturedIndex] = useState(0);
+  const [pickResult, setPickResult] = useState<PickResult | null>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -180,10 +142,78 @@ export default function Home() {
     return true;
   });
 
+  const handleSubmit = async () => {
+    if (!query.trim()) return;
+    setLoading(true);
+    setError('');
+    setMovies([]);
+    setPickResult(null);
+    setSearchedFor(query);
+    setDurationFilter('any');
+    setExpandedId(null);
+    setActiveGenre('');
+
+    try {
+      // Ask Claude to classify intent + extract search query
+      const aiRes = await fetch('/api/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query }),
+      });
+      const aiData = await aiRes.json();
+
+      if (aiData.intent === 'pick') {
+        // Mood-based — pick ONE movie from catalog
+        const movieList = FREE_MOVIES_CATALOG.map(m =>
+          `- ID:${m.id} | ${m.title} | ${m.genre} | ${m.rating} | ${m.duration}`
+        ).join('\n');
+
+        const pickRes = await fetch('/api/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            query: `Pick ONE movie from this list for someone who wants: "${query}". List: ${movieList}. Reply ONLY with JSON: {"id":"...","title":"...","reason":"one sentence why"}`
+          }),
+        });
+        const pickData = await pickRes.json();
+
+        if (pickData.pick) {
+          const movie = FREE_MOVIES_CATALOG.find(m => m.id === pickData.pick.id);
+          setPickResult({
+            id: pickData.pick.id,
+            title: pickData.pick.title,
+            reason: pickData.pick.reason,
+            rating: movie?.rating || null,
+            duration: movie?.duration || null,
+            thumbnail: `https://i.ytimg.com/vi/${pickData.pick.id}/maxresdefault.jpg`,
+            youtubeUrl: `https://www.youtube.com/watch?v=${pickData.pick.id}`,
+          });
+        } else {
+          // Fallback to search
+          const ytRes = await fetch(`/api/youtube?q=${encodeURIComponent(aiData.searchQuery || query)}`);
+          const ytData = await ytRes.json();
+          setMovies(ytData.movies || []);
+        }
+      } else {
+        // Search mode — return grid
+        const optimizedQuery = aiData.searchQuery || query;
+        const ytRes = await fetch(`/api/youtube?q=${encodeURIComponent(optimizedQuery)}`);
+        const ytData = await ytRes.json();
+        if (ytData.error) throw new Error(ytData.error);
+        setMovies(ytData.movies || []);
+      }
+    } catch {
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchMovies = async (searchQuery: string, label: string) => {
     setLoading(true);
     setError('');
     setMovies([]);
+    setPickResult(null);
     setSearchedFor(label);
     setDurationFilter('any');
     setExpandedId(null);
@@ -199,38 +229,21 @@ export default function Home() {
     }
   };
 
-  const handleAISearch = async () => {
-    if (!query.trim()) return;
-    setLoading(true);
-    setError('');
-    setActiveGenre('');
-    setMovies([]);
-    setSearchedFor(query);
-    setDurationFilter('any');
-    setExpandedId(null);
-    try {
-      const aiRes = await fetch('/api/search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query }),
-      });
-      const aiData = await aiRes.json();
-      const optimizedQuery = aiData.searchQuery || query;
-      const ytRes = await fetch(`/api/youtube?q=${encodeURIComponent(optimizedQuery)}`);
-      const ytData = await ytRes.json();
-      if (ytData.error) throw new Error(ytData.error);
-      setMovies(ytData.movies || []);
-    } catch {
-      setError('Search failed. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleGenreClick = (genre: typeof GENRES[0]) => {
     setActiveGenre(genre.name);
     setQuery('');
     fetchMovies(genre.query, genre.name);
+  };
+
+  const handleReset = () => {
+    setActiveGenre('');
+    setMovies([]);
+    setPickResult(null);
+    setSearchedFor('');
+    setDurationFilter('any');
+    setExpandedId(null);
+    setQuery('');
+    setError('');
   };
 
   return (
@@ -257,7 +270,6 @@ export default function Home() {
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/60 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-
           <div className="absolute bottom-0 left-0 p-8 max-w-lg">
             <span className={`text-white text-xs font-bold px-2 py-1 rounded mb-4 inline-block ${RATING_COLORS[featured.rating] || 'bg-gray-600'}`}>
               {featured.rating}
@@ -274,7 +286,6 @@ export default function Home() {
               ▶ Watch Free
             </a>
           </div>
-
           <div className="absolute bottom-8 right-8 flex gap-2 items-center">
             {FEATURED.map((_, i) => (
               <button
@@ -286,42 +297,68 @@ export default function Home() {
           </div>
         </div>
 
-        {/* AI Search */}
-        <div className="text-center mb-12">
-          <h1 className="text-3xl font-bold mb-3">What do you want to watch?</h1>
-          <p className="text-white/50 mb-6">Describe it in plain English — AI finds it free on YouTube</p>
-          <div className="flex gap-3 max-w-2xl mx-auto">
+        {/* Unified Search Bar — one bar, no modes */}
+        <div className="mb-12 max-w-2xl mx-auto">
+          <p className="text-center text-white/40 text-sm mb-3">
+            Ask anything — search for a movie, describe a mood, or name an actor
+          </p>
+          <div className="flex gap-3">
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAISearch()}
-              placeholder="e.g. action movie with Tom Cruise under 2 hours"
+              onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+              placeholder='e.g. "Tom Cruise action" or "something funny tonight"'
               className="flex-1 bg-white/10 border border-white/20 rounded-xl px-5 py-4 text-white placeholder-white/30 focus:outline-none focus:border-purple-500 transition-all"
             />
             <button
-              onClick={handleAISearch}
+              onClick={handleSubmit}
               disabled={loading || !query.trim()}
               className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 disabled:opacity-40 disabled:cursor-not-allowed px-6 py-4 rounded-xl font-semibold transition-all"
             >
-              {loading ? '...' : 'Search'}
+              {loading ? '...' : '→'}
             </button>
           </div>
         </div>
+
+        {/* AI Pick Result */}
+        {pickResult && (
+          <div className="max-w-2xl mx-auto mb-12">
+            <div className="relative rounded-2xl overflow-hidden border border-purple-500/40">
+              <img src={pickResult.thumbnail} alt={pickResult.title} className="w-full aspect-video object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent flex items-end">
+                <div className="p-6 w-full">
+                  <div className="flex items-center gap-2 mb-2 flex-wrap">
+                    <span className="text-purple-400 text-xs font-semibold">🎯 AI picked this for you</span>
+                    {pickResult.rating && (
+                      <span className={`text-white text-xs font-bold px-1.5 py-0.5 rounded ${RATING_COLORS[pickResult.rating] || 'bg-gray-600'}`}>
+                        {pickResult.rating}
+                      </span>
+                    )}
+                    {pickResult.duration && <span className="text-white/50 text-xs">{pickResult.duration}</span>}
+                  </div>
+                  <h3 className="text-2xl font-bold mb-2">{pickResult.title}</h3>
+                  <p className="text-white/60 text-sm mb-4 italic">&quot;{pickResult.reason}&quot;</p>
+                  <a
+                    href={pickResult.youtubeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-white text-black px-6 py-3 rounded-xl font-bold hover:bg-white/90 transition-all"
+                  >
+                    ▶ Watch Free
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Browse by Genre */}
         <div className="mb-8">
           <h2 className="text-lg font-semibold text-white/60 mb-4">Browse by Genre</h2>
           <div className="flex flex-wrap gap-3">
             <button
-              onClick={() => {
-                setActiveGenre('');
-                setMovies([]);
-                setSearchedFor('');
-                setDurationFilter('any');
-                setExpandedId(null);
-                setQuery('');
-              }}
+              onClick={handleReset}
               className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all ${
                 activeGenre || searchedFor
                   ? 'border-white/40 bg-white/10 hover:bg-white/20 text-white/80'
@@ -372,7 +409,7 @@ export default function Home() {
         {loading && (
           <div className="text-center py-20">
             <div className="inline-block w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p className="text-white/50">Finding free movies for you...</p>
+            <p className="text-white/50">Finding the perfect movie...</p>
           </div>
         )}
 
@@ -470,16 +507,16 @@ export default function Home() {
           </>
         )}
 
-        {!loading && !error && movies.length === 0 && !searchedFor && (
+        {!loading && !error && movies.length === 0 && !searchedFor && !pickResult && (
           <div className="text-center py-20 text-white/30">
             <div className="text-6xl mb-4">🎬</div>
             <p className="text-lg">Search above or pick a genre to get started</p>
           </div>
         )}
 
-        {!loading && !error && movies.length === 0 && searchedFor && (
+        {!loading && !error && movies.length === 0 && searchedFor && !pickResult && (
           <div className="text-center py-20 text-white/40">
-            <p>No results for &quot;{searchedFor}&quot;. Try a different search.</p>
+            <p>No results found. Try a different search.</p>
           </div>
         )}
       </main>

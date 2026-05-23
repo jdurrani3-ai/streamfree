@@ -17,18 +17,28 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 150,
+        max_tokens: 200,
         messages: [
           {
             role: 'user',
-            content: `Convert this movie search into a short YouTube search query.
+            content: `Analyze this movie request and respond with JSON only.
 
-User: "${query}"
+User query: "${query}"
 
-Reply ONLY with this JSON, nothing else:
-{"searchQuery": "2-4 word YouTube search terms"}
+Rules:
+- intent = "pick" if the user describes a mood, feeling, or vague preference (e.g. "something funny", "I want a thriller tonight", "light and easy")
+- intent = "search" if the user mentions a specific actor, title, genre, era, or detailed preference
+- searchQuery = 2-4 optimized YouTube search words (no "free", "full movie", "watch online")
+- If intent is "pick", also include a pick object from this catalog:
+  [{"id":"FlOra-dwLzg","title":"Wrath of Man","genre":"action thriller"},{"id":"BqluXcZ9RyU","title":"Honest Thief","genre":"action romance"},{"id":"SebuC1iyhug","title":"First Blood","genre":"action drama"},{"id":"nzn1m-hbPYw","title":"Bumblebee","genre":"sci-fi family"},{"id":"K4zHXPQApic","title":"The Chronicles of Riddick","genre":"sci-fi action"},{"id":"naG_MI5dsbo","title":"Payback","genre":"crime action"},{"id":"gNK-Yr8ktgM","title":"The Spy Next Door","genre":"comedy family"},{"id":"mAVs05GzChs","title":"Evolution","genre":"sci-fi comedy"},{"id":"EMvIgNcej-w","title":"Blitz","genre":"crime thriller"},{"id":"dygYCbG-jNk","title":"A-X-L","genre":"sci-fi family"}]
 
-Rules: extract actors, genres, themes. No words like free, full movie, watch online.`
+Reply ONLY with JSON:
+{
+  "intent": "search" or "pick",
+  "searchQuery": "youtube search terms",
+  "pick": { "id": "...", "title": "...", "reason": "one sentence why this matches their mood" }
+}
+(include "pick" field only when intent is "pick")`
           }
         ]
       })
@@ -38,9 +48,9 @@ Rules: extract actors, genres, themes. No words like free, full movie, watch onl
     const content = data.content?.[0]?.text;
     if (!content) throw new Error('No AI response');
 
-    const parsed = JSON.parse(content);
+    const parsed = JSON.parse(content.trim());
     return NextResponse.json(parsed);
   } catch {
-    return NextResponse.json({ searchQuery: '' });
+    return NextResponse.json({ searchQuery: '', intent: 'search' });
   }
 }
