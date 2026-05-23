@@ -8,11 +8,16 @@ interface Movie {
   description: string;
   thumbnail: string;
   channel: string;
+  year: number;
+  durationMinutes: number | null;
+  rating: string | null;
   youtubeUrl: string;
 }
 
+type DurationFilter = 'any' | 'under90' | '90to120' | 'over120';
+
 const GENRES = [
-  { name: 'Action', emoji: '💥', query: 'action' },
+ { name: 'Action', emoji: '💥', query: 'action' },
   { name: 'Comedy', emoji: '😂', query: 'comedy' },
   { name: 'Drama', emoji: '🎭', query: 'drama' },
   { name: 'Horror', emoji: '👻', query: 'horror' },
@@ -22,7 +27,40 @@ const GENRES = [
   { name: 'Documentary', emoji: '🎥', query: 'documentary' },
   { name: 'Animation', emoji: '✨', query: 'animated' },
   { name: 'Crime', emoji: '🕵️', query: 'crime' },
+  { name: 'Family', emoji: '👨‍👩‍👧', query: 'family' },
+  { name: 'Kids', emoji: '🧒', query: 'kids children movie' },
+  { name: 'Western', emoji: '🤠', query: 'western cowboy' },
+  { name: 'Bollywood', emoji: '🎵', query: 'bollywood hindi' },
+  { name: 'International', emoji: '🌍', query: 'foreign film english subtitles' },
 ];
+
+const DURATION_FILTERS = [
+  { key: 'any' as DurationFilter, label: 'Any Length' },
+  { key: 'under90' as DurationFilter, label: 'Under 90 min' },
+  { key: '90to120' as DurationFilter, label: '90–120 min' },
+  { key: 'over120' as DurationFilter, label: '2+ hours' },
+];
+
+const RATING_COLORS: Record<string, string> = {
+  'G': 'bg-green-600',
+  'PG': 'bg-blue-600',
+  'PG-13': 'bg-yellow-600',
+  'R': 'bg-red-600',
+  'NC-17': 'bg-red-800',
+  'TV-G': 'bg-green-600',
+  'TV-PG': 'bg-blue-600',
+  'TV-14': 'bg-yellow-600',
+  'TV-MA': 'bg-red-600',
+};
+
+function formatDuration(minutes: number | null): string {
+  if (!minutes) return '';
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (h === 0) return `${m}m`;
+  if (m === 0) return `${h}h`;
+  return `${h}h ${m}m`;
+}
 
 export default function Home() {
   const [query, setQuery] = useState('');
@@ -31,12 +69,26 @@ export default function Home() {
   const [activeGenre, setActiveGenre] = useState('');
   const [error, setError] = useState('');
   const [searchedFor, setSearchedFor] = useState('');
+  const [durationFilter, setDurationFilter] = useState<DurationFilter>('any');
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+
+  const filteredMovies = movies.filter((movie) => {
+    if (durationFilter === 'any') return true;
+    if (!movie.durationMinutes) return false;
+    if (durationFilter === 'under90') return movie.durationMinutes < 90;
+    if (durationFilter === '90to120') return movie.durationMinutes >= 90 && movie.durationMinutes <= 120;
+    if (durationFilter === 'over120') return movie.durationMinutes > 120;
+    return true;
+  });
 
   const fetchMovies = async (searchQuery: string, label: string) => {
     setLoading(true);
     setError('');
     setMovies([]);
     setSearchedFor(label);
+    setDurationFilter('any');
+    setExpandedId(null);
     try {
       const res = await fetch(`/api/youtube?q=${encodeURIComponent(searchQuery)}`);
       const data = await res.json();
@@ -56,6 +108,8 @@ export default function Home() {
     setActiveGenre('');
     setMovies([]);
     setSearchedFor(query);
+    setDurationFilter('any');
+    setExpandedId(null);
     try {
       const aiRes = await fetch('/api/search', {
         method: 'POST',
@@ -121,6 +175,23 @@ export default function Home() {
         <div className="mb-12">
           <h2 className="text-lg font-semibold text-white/60 mb-4">Browse by Genre</h2>
           <div className="flex flex-wrap gap-3">
+            <button
+  onClick={() => {
+    setActiveGenre('');
+    setMovies([]);
+    setSearchedFor('');
+    setDurationFilter('any');
+    setExpandedId(null);
+    setQuery('');
+  }}
+  className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all ${
+    activeGenre || searchedFor
+      ? 'border-white/40 bg-white/10 hover:bg-white/20 text-white/80'
+      : 'border-white/10 bg-transparent text-white/20 cursor-default'
+  }`}
+>
+  <span className="text-sm font-medium">✕ Reset</span>
+</button>
             {GENRES.map((genre) => (
               <button
                 key={genre.name}
@@ -149,32 +220,93 @@ export default function Home() {
 
         {!loading && movies.length > 0 && (
           <>
-            <h2 className="text-xl font-semibold mb-6">
-              Results for <span className="text-purple-400">&quot;{searchedFor}&quot;</span>
-              <span className="text-white/40 text-sm font-normal ml-3">{movies.length} movies found</span>
-            </h2>
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+              <h2 className="text-xl font-semibold">
+                Results for <span className="text-purple-400">&quot;{searchedFor}&quot;</span>
+                <span className="text-white/40 text-sm font-normal ml-3">{filteredMovies.length} movies</span>
+              </h2>
+              <div className="flex gap-2 flex-wrap">
+                {DURATION_FILTERS.map((f) => (
+                  <button
+                    key={f.key}
+                    onClick={() => setDurationFilter(f.key)}
+                    className={`px-3 py-1.5 rounded-full text-sm border transition-all ${
+                      durationFilter === f.key
+                        ? 'border-purple-500 bg-purple-500/20 text-purple-300'
+                        : 'border-white/20 bg-white/5 hover:border-white/40 text-white/60'
+                    }`}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              {movies.map((movie) => (
-                <a key={movie.id} href={movie.youtubeUrl} target="_blank" rel="noopener noreferrer" className="group">
-                  <div className="relative overflow-hidden rounded-xl bg-white/5 border border-white/10 group-hover:border-purple-500/50 transition-all group-hover:scale-105">
-                    {movie.thumbnail ? (
-                      <img src={movie.thumbnail} alt={movie.title} className="w-full aspect-video object-cover" />
-                    ) : (
-                      <div className="w-full aspect-video bg-white/10 flex items-center justify-center">
-                        <span className="text-4xl">🎬</span>
+              {filteredMovies.map((movie) => (
+                <div key={movie.id} className="group">
+                  <a href={movie.youtubeUrl} target="_blank" rel="noopener noreferrer">
+                    <div
+  className="relative overflow-hidden rounded-xl bg-white/5 border border-white/10 group-hover:border-purple-500/50 transition-all group-hover:scale-105"
+  onMouseEnter={() => setHoveredId(movie.id)}
+  onMouseLeave={() => setHoveredId(null)}
+>
+                      {hoveredId === movie.id ? (
+  <iframe
+    src={`https://www.youtube.com/embed/${movie.id}?autoplay=1&mute=1&start=60&end=75&controls=0&modestbranding=1&rel=0`}
+    className="w-full aspect-video"
+    allow="autoplay; encrypted-media"
+  />
+) : movie.thumbnail ? (
+  <img src={movie.thumbnail} alt={movie.title} className="w-full aspect-video object-cover" />
+) : (
+  <div className="w-full aspect-video bg-white/10 flex items-center justify-center">
+    <span className="text-4xl">🎬</span>
+  </div>
+)}
+                      <div className="absolute top-2 left-2 flex gap-1">
+                        {movie.rating && (
+                          <span className={`text-white text-xs font-bold px-1.5 py-0.5 rounded ${RATING_COLORS[movie.rating] || 'bg-gray-600'}`}>
+                            {movie.rating}
+                          </span>
+                        )}
                       </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
-                      <span className="text-sm font-medium">▶ Watch Free</span>
+                      {movie.durationMinutes ? (
+                        <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded">
+                          {formatDuration(movie.durationMinutes)}
+                        </div>
+                      ) : null}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+                        <span className="text-sm font-medium">▶ Watch Free</span>
+                      </div>
                     </div>
-                  </div>
-                  <div className="mt-2 px-1">
-                    <p className="text-sm font-medium text-white/90 line-clamp-2 group-hover:text-purple-300 transition-colors">{movie.title}</p>
-                    <p className="text-xs text-white/40 mt-1">{movie.channel}</p>
-                  </div>
-                </a>
+                    <div className="mt-2 px-1">
+                      <p className="text-sm font-medium text-white/90 line-clamp-2 group-hover:text-purple-300 transition-colors">{movie.title}</p>
+                      <p className="text-xs text-white/40 mt-0.5">{movie.channel}{movie.year ? ` • ${movie.year}` : ''}</p>
+                    </div>
+                  </a>
+                  {movie.description && (
+                    <div className="px-1 mt-1">
+                      <p className={`text-xs text-white/30 ${expandedId === movie.id ? '' : 'line-clamp-2'}`}>
+                        {movie.description}
+                      </p>
+                      <button
+                        onClick={() => setExpandedId(expandedId === movie.id ? null : movie.id)}
+                        className="text-xs text-purple-400/60 hover:text-purple-400 mt-0.5 transition-colors"
+                      >
+                        {expandedId === movie.id ? '− less' : '+ more'}
+                      </button>
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
+
+            {filteredMovies.length === 0 && (
+              <div className="text-center py-12 text-white/40">
+                <p>No movies match this duration. Try a different filter.</p>
+              </div>
+            )}
           </>
         )}
 
