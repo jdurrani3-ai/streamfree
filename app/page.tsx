@@ -1,64 +1,195 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+
+interface Movie {
+  id: string;
+  title: string;
+  description: string;
+  thumbnail: string;
+  channel: string;
+  youtubeUrl: string;
+}
+
+const GENRES = [
+  { name: 'Action', emoji: '💥', query: 'action' },
+  { name: 'Comedy', emoji: '😂', query: 'comedy' },
+  { name: 'Drama', emoji: '🎭', query: 'drama' },
+  { name: 'Horror', emoji: '👻', query: 'horror' },
+  { name: 'Thriller', emoji: '🔪', query: 'thriller' },
+  { name: 'Sci-Fi', emoji: '🚀', query: 'science fiction' },
+  { name: 'Romance', emoji: '❤️', query: 'romance' },
+  { name: 'Documentary', emoji: '🎥', query: 'documentary' },
+  { name: 'Animation', emoji: '✨', query: 'animated' },
+  { name: 'Crime', emoji: '🕵️', query: 'crime' },
+];
 
 export default function Home() {
+  const [query, setQuery] = useState('');
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [activeGenre, setActiveGenre] = useState('');
+  const [error, setError] = useState('');
+  const [searchedFor, setSearchedFor] = useState('');
+
+  const fetchMovies = async (searchQuery: string, label: string) => {
+    setLoading(true);
+    setError('');
+    setMovies([]);
+    setSearchedFor(label);
+    try {
+      const res = await fetch(`/api/youtube?q=${encodeURIComponent(searchQuery)}`);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      setMovies(data.movies || []);
+    } catch {
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAISearch = async () => {
+    if (!query.trim()) return;
+    setLoading(true);
+    setError('');
+    setActiveGenre('');
+    setMovies([]);
+    setSearchedFor(query);
+    try {
+      const aiRes = await fetch('/api/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query }),
+      });
+      const aiData = await aiRes.json();
+      const optimizedQuery = aiData.searchQuery || query;
+      const ytRes = await fetch(`/api/youtube?q=${encodeURIComponent(optimizedQuery)}`);
+      const ytData = await ytRes.json();
+      if (ytData.error) throw new Error(ytData.error);
+      setMovies(ytData.movies || []);
+    } catch {
+      setError('Search failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGenreClick = (genre: typeof GENRES[0]) => {
+    setActiveGenre(genre.name);
+    setQuery('');
+    fetchMovies(genre.query, genre.name);
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-[#0a0a0f] text-white">
+      <header className="border-b border-white/10 px-6 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">🎬</span>
+            <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+              StreamFree
+            </span>
+          </div>
+          <p className="text-sm text-white/40">Free movies, powered by AI</p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+      </header>
+
+      <main className="max-w-7xl mx-auto px-6 py-12">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold mb-3">What do you want to watch?</h1>
+          <p className="text-white/50 mb-8">Describe it in plain English — AI finds it free on YouTube</p>
+          <div className="flex gap-3 max-w-2xl mx-auto">
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleAISearch()}
+              placeholder="e.g. action movie with Tom Cruise under 2 hours"
+              className="flex-1 bg-white/10 border border-white/20 rounded-xl px-5 py-4 text-white placeholder-white/30 focus:outline-none focus:border-purple-500 transition-all"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <button
+              onClick={handleAISearch}
+              disabled={loading || !query.trim()}
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 disabled:opacity-40 disabled:cursor-not-allowed px-6 py-4 rounded-xl font-semibold transition-all"
+            >
+              {loading ? '...' : 'Search'}
+            </button>
+          </div>
         </div>
+
+        <div className="mb-12">
+          <h2 className="text-lg font-semibold text-white/60 mb-4">Browse by Genre</h2>
+          <div className="flex flex-wrap gap-3">
+            {GENRES.map((genre) => (
+              <button
+                key={genre.name}
+                onClick={() => handleGenreClick(genre)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all ${
+                  activeGenre === genre.name
+                    ? 'border-purple-500 bg-purple-500/20 text-purple-300'
+                    : 'border-white/20 bg-white/5 hover:border-white/40 hover:bg-white/10 text-white/70'
+                }`}
+              >
+                <span>{genre.emoji}</span>
+                <span className="text-sm font-medium">{genre.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {loading && (
+          <div className="text-center py-20">
+            <div className="inline-block w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p className="text-white/50">Finding free movies for you...</p>
+          </div>
+        )}
+
+        {error && <div className="text-center py-12 text-red-400">{error}</div>}
+
+        {!loading && movies.length > 0 && (
+          <>
+            <h2 className="text-xl font-semibold mb-6">
+              Results for <span className="text-purple-400">&quot;{searchedFor}&quot;</span>
+              <span className="text-white/40 text-sm font-normal ml-3">{movies.length} movies found</span>
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              {movies.map((movie) => (
+                <a key={movie.id} href={movie.youtubeUrl} target="_blank" rel="noopener noreferrer" className="group">
+                  <div className="relative overflow-hidden rounded-xl bg-white/5 border border-white/10 group-hover:border-purple-500/50 transition-all group-hover:scale-105">
+                    {movie.thumbnail ? (
+                      <img src={movie.thumbnail} alt={movie.title} className="w-full aspect-video object-cover" />
+                    ) : (
+                      <div className="w-full aspect-video bg-white/10 flex items-center justify-center">
+                        <span className="text-4xl">🎬</span>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+                      <span className="text-sm font-medium">▶ Watch Free</span>
+                    </div>
+                  </div>
+                  <div className="mt-2 px-1">
+                    <p className="text-sm font-medium text-white/90 line-clamp-2 group-hover:text-purple-300 transition-colors">{movie.title}</p>
+                    <p className="text-xs text-white/40 mt-1">{movie.channel}</p>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </>
+        )}
+
+        {!loading && !error && movies.length === 0 && !searchedFor && (
+          <div className="text-center py-20 text-white/30">
+            <div className="text-6xl mb-4">🎬</div>
+            <p className="text-lg">Search above or pick a genre to get started</p>
+          </div>
+        )}
+
+        {!loading && !error && movies.length === 0 && searchedFor && (
+          <div className="text-center py-20 text-white/40">
+            <p>No results for &quot;{searchedFor}&quot;. Try a different search.</p>
+          </div>
+        )}
       </main>
     </div>
   );
