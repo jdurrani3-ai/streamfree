@@ -52,6 +52,43 @@ interface PickResult {
   youtubeUrl: string;
 }
 
+interface ScoreGame {
+  id: string;
+  name: string;
+  homeTeam: string;
+  homeScore: string;
+  homeLogo: string;
+  awayTeam: string;
+  awayScore: string;
+  awayLogo: string;
+  status: string;
+  isLive: boolean;
+  isFinal: boolean;
+  clock: string;
+  period: number;
+}
+
+interface SportScores {
+  key: string;
+  label: string;
+  emoji: string;
+  games: ScoreGame[];
+}
+
+interface LiveVideo {
+  id: string;
+  provider: string;
+  type: string;
+  category: string;
+  title: string;
+  channelTitle: string;
+  thumbnailUrl: string;
+  watchUrl: string;
+  isLive: boolean;
+  source: string;
+  region: string;
+}
+
 type DurationFilter = 'any' | 'under90' | '90to120' | 'over120';
 
 const FEATURED = [
@@ -81,21 +118,20 @@ const FREE_MOVIES_CATALOG = [
 ];
 
 const GENRES = [
-  { name: 'Action', emoji: '💥', query: 'action' },
-  { name: 'Comedy', emoji: '😂', query: 'comedy' },
-  { name: 'Drama', emoji: '🎭', query: 'drama' },
-  { name: 'Horror', emoji: '👻', query: 'horror' },
-  { name: 'Thriller', emoji: '🔪', query: 'thriller' },
-  { name: 'Sci-Fi', emoji: '🚀', query: 'science fiction' },
-  { name: 'Romance', emoji: '❤️', query: 'romance' },
-  { name: 'Documentary', emoji: '🎥', query: 'documentary' },
-  { name: 'Animation', emoji: '✨', query: 'animated' },
-  { name: 'Crime', emoji: '🕵️', query: 'crime' },
-  { name: 'Family', emoji: '👨‍👩‍👧', query: 'family' },
-  { name: 'Kids', emoji: '🧒', query: 'kids children movie' },
-  { name: 'Western', emoji: '🤠', query: 'western cowboy' },
-  { name: 'Bollywood/Music', emoji: '🎵', query: 'bollywood music hindi' },
-  { name: 'International', emoji: '🌍', query: 'foreign film subtitles' },
+  { name: 'Action', emoji: '💥', query: 'action', color: 'bg-red-700' },
+  { name: 'Animation', emoji: '🪄', query: 'animated', color: 'bg-orange-700' },
+  { name: 'Bollywood/Music', emoji: '🎶', query: 'bollywood music hindi', color: 'bg-rose-500' },
+  { name: 'Comedy', emoji: '😄', query: 'comedy', color: 'bg-yellow-700' },
+  { name: 'Crime & Thriller', emoji: '🕵️', query: 'crime thriller detective', color: 'bg-zinc-700' },
+  { name: 'Documentary', emoji: '🎥', query: 'documentary', color: 'bg-teal-800' },
+  { name: 'Drama', emoji: '🎭', query: 'drama', color: 'bg-purple-800' },
+  { name: 'Family', emoji: '👨‍👩‍👧‍👦', query: 'family', color: 'bg-green-700' },
+  { name: 'Horror', emoji: '👻', query: 'horror', color: 'bg-gray-800' },
+  { name: 'International', emoji: '🌍', query: 'foreign film english subtitles', color: 'bg-indigo-800' },
+  { name: 'Kids', emoji: '🧸', query: 'kids children movie', color: 'bg-cyan-700' },
+  { name: 'Romance', emoji: '💘', query: 'romance', color: 'bg-pink-700' },
+  { name: 'Sci-Fi', emoji: '🚀', query: 'science fiction', color: 'bg-blue-800' },
+  { name: 'Western', emoji: '🤠', query: 'western cowboy', color: 'bg-amber-800' },
 ];
 
 const DURATION_FILTERS = [
@@ -197,6 +233,15 @@ export default function Home() {
   const [pickResult, setPickResult] = useState<PickResult | null>(null);
   const [hasFreeMovies, setHasFreeMovies] = useState(false);
   const [isTextSearch, setIsTextSearch] = useState(false);
+  const [liveOpen, setLiveOpen] = useState(false);
+  const [liveVideos, setLiveVideos] = useState<LiveVideo[]>([]);
+  const [scores, setScores] = useState<SportScores[]>([]);
+  const [scoresLoading, setScoresLoading] = useState(false);
+  const [scoresError, setScoresError] = useState('');
+  const [activeSport, setActiveSport] = useState('nba');
+  const [liveTab, setLiveTab] = useState<'news' | 'sports' | 'scores'>('news');
+  const [liveLoading, setLiveLoading] = useState(false);
+  const [liveError, setLiveError] = useState('');
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -222,6 +267,41 @@ export default function Home() {
     if (durationFilter === 'over120') return m.runtimeMinutes > 120;
     return true;
   });
+
+  const fetchScores = async () => {
+    setScoresLoading(true);
+    setScoresError('');
+    try {
+      const res = await fetch('/api/scores');
+      const data = await res.json();
+      setScores(Array.isArray(data) ? data : []);
+    } catch {
+      setScoresError('Scores temporarily unavailable. Please try again later.');
+    } finally {
+      setScoresLoading(false);
+    }
+  };
+
+  const fetchLive = async (category: 'news' | 'sports') => {
+    setLiveLoading(true);
+    setLiveError('');
+    try {
+      const res = await fetch(`/api/youtube-live?category=${category}`);
+      const data = await res.json();
+      setLiveVideos(Array.isArray(data) ? data : []);
+    } catch {
+      setLiveError('Live results are temporarily unavailable. Please try again later.');
+      setLiveVideos([]);
+    } finally {
+      setLiveLoading(false);
+    }
+  };
+
+  const handleLiveTab = (tab: 'news' | 'sports' | 'scores') => {
+    setLiveTab(tab);
+    if (tab === 'scores') fetchScores();
+    else fetchLive(tab);
+  };
 
   const handleSubmit = async () => {
     if (!query.trim()) return;
@@ -411,19 +491,172 @@ export default function Home() {
           <h2 className="text-lg font-semibold text-white/60 mb-4">Browse by Genre</h2>
           <div className="flex flex-wrap gap-3">
             <button onClick={handleReset}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all ${activeGenre || searchedFor ? 'border-white/40 bg-white/10 hover:bg-white/20 text-white/80' : 'border-white/10 bg-transparent text-white/20 cursor-default'}`}>
+              className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-zinc-600 text-white text-sm font-medium transition-all hover:brightness-110">
               <span className="text-sm font-medium">✕ Reset</span>
             </button>
             {GENRES.map(genre => (
               <button key={genre.name} onClick={() => handleGenreClick(genre)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all ${activeGenre === genre.name ? 'border-purple-500 bg-purple-500/20 text-purple-300' : 'border-white/20 bg-white/5 hover:border-white/40 hover:bg-white/10 text-white/70'}`}>
+                className={`flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 text-white text-sm font-medium transition-all hover:border-white/40 hover:brightness-110 ${activeGenre === genre.name ? 'ring-2 ring-white/40 brightness-125' : ''} ${genre.color}`}>
                 <span>{genre.emoji}</span>
-                <span className="text-sm font-medium">{genre.name}</span>
+                <span>{genre.name}</span>
               </button>
             ))}
           </div>
         </div>
 
+        {/* Live Section */}
+        <div className="mb-12">
+          <button onClick={() => setLiveOpen(o => !o)} className="flex items-center gap-2 mb-3 group cursor-pointer">
+            <h2 className="text-lg font-semibold text-white/60 group-hover:text-white/90 transition-colors">🔴 Live</h2>
+            <span className="text-white/30 text-xs ml-1">{liveOpen ? "▲" : "▼"}</span>
+          </button>
+          <div style={{display: liveOpen ? "block" : "none"}}>
+          <div className="flex gap-2 mb-4">
+            <button
+              onClick={() => handleLiveTab('news')}
+              className={`px-4 py-1.5 rounded-full text-sm border transition-all ${liveTab === 'news' ? 'border-red-500 bg-red-500/20 text-red-300' : 'border-white/20 bg-white/5 hover:border-white/40 text-white/60'}`}>
+              📰 News
+            </button>
+            <button
+              onClick={() => handleLiveTab('sports')}
+              className={`px-4 py-1.5 rounded-full text-sm border transition-all ${liveTab === 'sports' ? 'border-green-500 bg-green-500/20 text-green-300' : 'border-white/20 bg-white/5 hover:border-white/40 text-white/60'}`}>
+              🏆 Sports
+            </button>
+            <button
+              onClick={() => handleLiveTab('scores')}
+              className={`px-4 py-1.5 rounded-full text-sm border transition-all ${liveTab === 'scores' ? 'border-yellow-500 bg-yellow-500/20 text-yellow-300' : 'border-white/20 bg-white/5 hover:border-white/40 text-white/60'}`}>
+              Scores
+            </button>
+          </div>
+
+          {liveTab !== 'scores' && liveLoading && (
+            <div className="text-center py-8">
+              <div className="inline-block w-6 h-6 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          )}
+
+          {liveTab !== 'scores' && liveError && (
+            <p className="text-white/40 text-sm py-4">{liveError}</p>
+          )}
+
+          {/* Scores Tab */}
+          {liveTab === 'scores' && scoresLoading && (
+            <div className="text-center py-8">
+              <div className="inline-block w-6 h-6 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          )}
+          {liveTab === 'scores' && scoresError && (
+            <p className="text-white/40 text-sm py-4">{scoresError}</p>
+          )}
+          {liveTab === 'scores' && !scoresLoading && scores.length > 0 && (
+            <div>
+              <div className="flex gap-2 mb-4 flex-wrap">
+                {scores.map(s => (
+                  <button key={s.key} onClick={() => setActiveSport(s.key)}
+                    className={`px-3 py-1 rounded-full text-xs font-bold border transition-all ${activeSport === s.key ? 'border-yellow-500 bg-yellow-500/20 text-yellow-300' : 'border-white/20 bg-white/5 text-white/50 hover:border-white/40'}`}>
+                    {s.emoji} {s.label} {s.games.length > 0 ? `(${s.games.length})` : ''}
+                  </button>
+                ))}
+              </div>
+              {scores.filter(s => s.key === activeSport).map(sport => (
+                <div key={sport.key}>
+                  {sport.games.length === 0 ? (
+                    <p className="text-white/30 text-sm py-4">No games scheduled today for {sport.label}.</p>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {sport.games.map(game => (
+                        <div key={game.id} className="bg-white/5 border border-white/10 rounded-xl p-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className={`text-xs font-bold px-2 py-0.5 rounded ${game.isLive ? 'bg-red-600 animate-pulse' : game.isFinal ? 'bg-zinc-600' : 'bg-blue-700'}`}>
+                              {game.isLive ? '● LIVE' : game.isFinal ? 'FINAL' : 'UPCOMING'}
+                            </span>
+                            {game.isLive && <span className="text-xs text-white/50">{game.clock} • Q{game.period}</span>}
+                            {!game.isLive && !game.isFinal && <span className="text-xs text-white/50">{game.status}</span>}
+                          </div>
+                          <div className="flex items-center justify-between mt-3">
+                            <div className="flex items-center gap-2 flex-1">
+                              {game.awayLogo && <img src={game.awayLogo} alt={game.awayTeam} className="w-8 h-8 object-contain" />}
+                              <span className="text-sm font-medium text-white/90 truncate">{game.awayTeam}</span>
+                            </div>
+                            <span className="text-xl font-bold text-white mx-2">{game.awayScore}</span>
+                          </div>
+                          <div className="flex items-center justify-between mt-2">
+                            <div className="flex items-center gap-2 flex-1">
+                              {game.homeLogo && <img src={game.homeLogo} alt={game.homeTeam} className="w-8 h-8 object-contain" />}
+                              <span className="text-sm font-medium text-white/90 truncate">{game.homeTeam}</span>
+                            </div>
+                            <span className="text-xl font-bold text-white mx-2">{game.homeScore}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+          {liveTab === 'scores' && !scoresLoading && scores.length === 0 && !scoresError && (
+            <p className="text-white/30 text-sm py-4">Click Scores to load live game data.</p>
+          )}
+
+          {liveTab !== 'scores' && !liveLoading && !liveError && liveVideos.length === 0 && (
+            <p className="text-white/30 text-sm py-4">Click News or Sports to load live streams.</p>
+          )}
+
+          {liveTab !== 'scores' && !liveLoading && liveTab === 'news' && (
+            <div className="flex gap-3 mb-4 flex-wrap">
+              {[
+                { name: 'Al Jazeera', url: 'https://www.youtube.com/watch?v=gCNeDWCI0vo', color: 'bg-yellow-700' },
+                { name: 'Bloomberg', url: 'https://www.youtube.com/watch?v=iEpJwprxDdk', color: 'bg-blue-800' },
+                { name: 'DW News', url: 'https://www.youtube.com/watch?v=LuKwFajn37U', color: 'bg-zinc-700' },
+                { name: 'Yahoo Finance', url: 'https://www.youtube.com/watch?v=KQp-e_XQnDE', color: 'bg-purple-800' },
+                { name: 'NDTV', url: 'https://www.youtube.com/watch?v=uoK1dFpMo98', color: 'bg-orange-800' },
+                { name: 'Geo News', url: 'https://www.youtube.com/watch?v=_FwympjOSNE', color: 'bg-green-800' },
+                { name: 'Euronews', url: 'https://www.youtube.com/watch?v=pykpO5kQJ98', color: 'bg-blue-900' },
+                { name: 'Africa Live', url: 'https://www.youtube.com/watch?v=NQjabLGdP5g', color: 'bg-yellow-900' },
+                { name: 'TMZ', url: 'https://www.youtube.com/watch?v=G2kbkYtsbAA', color: 'bg-pink-800' },
+              ].map(ch => (
+                <a key={ch.name} href={ch.url} target="_blank" rel="noopener noreferrer"
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-white text-xs font-bold border border-white/10 hover:border-red-500/50 transition-all ${ch.color}`}>
+                  <span className="text-red-400 animate-pulse">●</span> {ch.name}
+                </a>
+              ))}
+            </div>
+          )}
+
+          {liveTab !== 'scores' && !liveLoading && liveVideos.length > 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              {liveVideos.map(video => (
+                <div key={video.id} className="group cursor-pointer" onClick={() => window.open(video.watchUrl, '_blank')}>
+                  <div className="relative overflow-hidden rounded-xl bg-white/5 border border-white/10 group-hover:border-red-500/50 transition-all group-hover:scale-105">
+                    {video.thumbnailUrl ? (
+                      <img src={video.thumbnailUrl} alt={video.title} className="w-full aspect-video object-cover" />
+                    ) : (
+                      <div className="w-full aspect-video bg-white/10 flex items-center justify-center">
+                        <span className="text-4xl">📺</span>
+                      </div>
+                    )}
+                    <div className="absolute top-2 left-2 flex gap-1">
+                      <span className="text-white text-xs font-bold px-1.5 py-0.5 rounded bg-red-600 animate-pulse">● LIVE</span>
+                      <span className={`text-white text-xs font-bold px-1.5 py-0.5 rounded ${liveTab === 'news' ? 'bg-blue-600' : 'bg-green-700'}`}>
+                        {liveTab === 'news' ? 'News' : 'Sports'}
+                      </span>
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+                      <span className="text-sm font-medium">▶ Watch Live</span>
+                    </div>
+                  </div>
+                  <div className="mt-2 px-1">
+                    <p className="text-sm font-medium text-white/90 line-clamp-2 group-hover:text-red-300 transition-colors">{video.title}</p>
+                    <p className="text-xs text-white/40 mt-0.5">{video.channelTitle} · Opens on YouTube</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+          </div>
         {/* Premium Channels */}
         <div className="mb-12">
           <h2 className="text-lg font-semibold text-white/60 mb-4">Premium Channels</h2>
