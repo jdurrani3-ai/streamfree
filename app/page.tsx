@@ -565,7 +565,7 @@ export default function Home() {
                               <div className="w-full aspect-video bg-white/10 flex items-center justify-center"><span className="text-4xl">🎬</span></div>
                             )}
                             <div className="absolute top-2 left-2">
-                              <span className={`text-white text-xs font-bold px-1.5 py-0.5 rounded ${badge.bg}`}>{badge.label}</span>
+                              <span className={`text-white text-xs font-bold px-1.5 py-0.5 rounded ${badge.bg}`}>{badge.label}</span>{movie.watchUrl && movie.watchUrl.includes('/live-tv/') && <span className='text-white text-xs font-bold px-1.5 py-0.5 rounded bg-yellow-600 ml-1'>Live TV</span>}
                             </div>
                             {movie.runtimeMinutes && (
                               <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded">{formatDuration(movie.runtimeMinutes)}</div>
