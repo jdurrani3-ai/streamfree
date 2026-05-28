@@ -501,6 +501,7 @@ export default function Home() {
                           <span className={`text-white text-xs font-bold px-1.5 py-0.5 rounded ${badge.bg}`}>
                             {badge.label}
                           </span>
+                          {movie.watchUrl && movie.watchUrl.includes('/live-tv/') && <span className='text-white text-xs font-bold px-1.5 py-0.5 rounded bg-yellow-600 ml-1'>Live TV</span>}
                           {movie.rating && (
                             <span className={`text-white text-xs font-bold px-1.5 py-0.5 rounded ${RATING_COLORS[movie.rating] || 'bg-gray-600'}`}>
                               {movie.rating}
