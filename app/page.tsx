@@ -266,7 +266,7 @@ export default function Home() {
         const ytData = await ytRes.json();
         const freeData = freeRes.ok ? await freeRes.json() : [];
         if (ytData.error) throw new Error(ytData.error);
-        const uniqueYt = [...new Map((ytData.movies || []).map((m: YouTubeMovie) => [m.id, m])).values()];
+        const uniqueYt = [...new Map((ytData.movies || []).map((m: YouTubeMovie) => [m.id, m])).values()] as YouTubeMovie[];
         setYtMovies(uniqueYt);
         setFreeMovies(Array.isArray(freeData) ? freeData : []);
         setLoading(false);
@@ -296,7 +296,7 @@ export default function Home() {
       const ytData = await ytRes.json();
       const freeData = freeRes.ok ? await freeRes.json() : [];
       if (ytData.error) throw new Error(ytData.error);
-      const uniqueYt = [...new Map((ytData.movies || []).map((m: YouTubeMovie) => [m.id, m])).values()];
+      const uniqueYt = [...new Map((ytData.movies || []).map((m: YouTubeMovie) => [m.id, m])).values()] as YouTubeMovie[];
         setYtMovies(uniqueYt);
       setFreeMovies(Array.isArray(freeData) ? freeData : []);
     } catch {
