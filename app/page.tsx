@@ -234,6 +234,7 @@ export default function Home() {
   const [hasFreeMovies, setHasFreeMovies] = useState(false);
   const [isTextSearch, setIsTextSearch] = useState(false);
   const [liveOpen, setLiveOpen] = useState(false);
+  const decodeHtml = (str: string) => str.replace(/&amp;/g,'&').replace(/&#39;/g,"'").replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
   const [liveVideos, setLiveVideos] = useState<LiveVideo[]>([]);
   const [scores, setScores] = useState<SportScores[]>([]);
   const [scoresLoading, setScoresLoading] = useState(false);
@@ -487,7 +488,7 @@ export default function Home() {
         )}
 
         {/* Genre Browse */}
-        <div className="mb-8">
+        <div className="mb-8 border border-white/25 rounded-2xl p-5">
           <h2 className="text-lg font-semibold text-white/60 mb-4">Browse by Genre</h2>
           <div className="flex flex-wrap gap-3">
             <button onClick={handleReset}
@@ -505,7 +506,7 @@ export default function Home() {
         </div>
 
         {/* Live Section */}
-        <div className="mb-12">
+        <div className="mb-12 border border-white/25 rounded-2xl p-5">
           <button onClick={() => setLiveOpen(o => !o)} className="flex items-center gap-2 mb-3 group cursor-pointer">
             <h2 className="text-lg font-semibold text-white/60 group-hover:text-white/90 transition-colors">🔴 Live</h2>
             <span className="text-white/30 text-xs ml-1">{liveOpen ? "▲" : "▼"}</span>
@@ -514,17 +515,17 @@ export default function Home() {
           <div className="flex gap-2 mb-4">
             <button
               onClick={() => handleLiveTab('news')}
-              className={`px-4 py-1.5 rounded-full text-sm border transition-all ${liveTab === 'news' ? 'border-red-500 bg-red-500/20 text-red-300' : 'border-white/20 bg-white/5 hover:border-white/40 text-white/60'}`}>
+              className={`px-4 py-1.5 rounded-full text-sm border transition-all cursor-pointer ${liveTab === 'news' ? 'border-red-500 bg-red-500/20 text-red-300' : 'border-white/20 bg-white/5 hover:border-white/40 text-white/60'}`}>
               📰 News
             </button>
             <button
               onClick={() => handleLiveTab('sports')}
-              className={`px-4 py-1.5 rounded-full text-sm border transition-all ${liveTab === 'sports' ? 'border-green-500 bg-green-500/20 text-green-300' : 'border-white/20 bg-white/5 hover:border-white/40 text-white/60'}`}>
+              className={`px-4 py-1.5 rounded-full text-sm border transition-all cursor-pointer ${liveTab === 'sports' ? 'border-green-500 bg-green-500/20 text-green-300' : 'border-white/20 bg-white/5 hover:border-white/40 text-white/60'}`}>
               🏆 Sports
             </button>
             <button
               onClick={() => handleLiveTab('scores')}
-              className={`px-4 py-1.5 rounded-full text-sm border transition-all ${liveTab === 'scores' ? 'border-yellow-500 bg-yellow-500/20 text-yellow-300' : 'border-white/20 bg-white/5 hover:border-white/40 text-white/60'}`}>
+              className={`px-4 py-1.5 rounded-full text-sm border transition-all cursor-pointer ${liveTab === 'scores' ? 'border-yellow-500 bg-yellow-500/20 text-yellow-300' : 'border-white/20 bg-white/5 hover:border-white/40 text-white/60'}`}>
               Scores
             </button>
           </div>
@@ -626,39 +627,50 @@ export default function Home() {
 
           {liveTab !== 'scores' && !liveLoading && liveVideos.length > 0 && (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              {liveVideos.map(video => (
-                <div key={video.id} className="group cursor-pointer" onClick={() => window.open(video.watchUrl, '_blank')}>
-                  <div className="relative overflow-hidden rounded-xl bg-white/5 border border-white/10 group-hover:border-red-500/50 transition-all group-hover:scale-105">
-                    {video.thumbnailUrl ? (
-                      <img src={video.thumbnailUrl} alt={video.title} className="w-full aspect-video object-cover" />
-                    ) : (
-                      <div className="w-full aspect-video bg-white/10 flex items-center justify-center">
-                        <span className="text-4xl">📺</span>
+              {liveVideos.map(video => {
+                const initial = video.channelTitle?.[0]?.toUpperCase() || '?';
+                const avatarColors = ['bg-red-700','bg-blue-700','bg-amber-700','bg-green-700','bg-purple-700','bg-teal-700','bg-pink-700'];
+                const avatarColor = avatarColors[(video.channelTitle?.charCodeAt(0) || 0) % avatarColors.length];
+                return (
+                  <div key={video.id} className="group cursor-pointer" onClick={() => window.open(video.watchUrl, '_blank')}>
+                    <div className="relative overflow-hidden rounded-2xl border border-white/10 group-hover:border-red-500/40 transition-all group-hover:scale-105 flex flex-col" style={{height:'310px'}}>
+                      <div className="relative flex-shrink-0" style={{height:'160px'}}>
+                        {video.thumbnailUrl ? (
+                          <img src={video.thumbnailUrl} alt={video.title} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-b from-zinc-800 to-zinc-900 flex items-center justify-center">
+                            <span className="text-4xl opacity-60">📺</span>
+                          </div>
+                        )}
+
                       </div>
-                    )}
-                    <div className="absolute top-2 left-2 flex gap-1">
-                      <span className="text-white text-xs font-bold px-1.5 py-0.5 rounded bg-red-600 animate-pulse">● LIVE</span>
-                      <span className={`text-white text-xs font-bold px-1.5 py-0.5 rounded ${liveTab === 'news' ? 'bg-blue-600' : 'bg-green-700'}`}>
-                        {liveTab === 'news' ? 'News' : 'Sports'}
-                      </span>
-                    </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
-                      <span className="text-sm font-medium">▶ Watch Live</span>
+                      <div className="flex flex-col justify-between flex-1 px-3 py-2 bg-zinc-900">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1.5">
+                            <span className="text-white text-xs font-bold px-2 py-0.5 rounded-full bg-red-600 flex items-center gap-1"><span className="w-1.5 h-1.5 bg-white rounded-full inline-block"></span>LIVE</span>
+                            <span className={`text-white text-xs font-bold px-2 py-0.5 rounded-full ${liveTab === 'news' ? 'bg-blue-600' : 'bg-green-700'}`}>{liveTab === 'news' ? 'News' : 'Sports'}</span>
+                          </div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <div className={`w-5 h-5 rounded-full ${avatarColor} flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>{initial}</div>
+                            <p className="text-white/50 text-xs truncate">{video.channelTitle}</p>
+                          </div>
+                          <p className="text-white text-xs font-medium leading-snug line-clamp-2">{decodeHtml(video.title)}</p>
+                        </div>
+                        <div className="bg-white rounded-full py-1.5 text-center mt-2">
+                          <span className="text-black text-xs font-bold">▶ Watch Live</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div className="mt-2 px-1">
-                    <p className="text-sm font-medium text-white/90 line-clamp-2 group-hover:text-red-300 transition-colors">{video.title}</p>
-                    <p className="text-xs text-white/40 mt-0.5">{video.channelTitle} · Opens on YouTube</p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
 
           </div>
         {/* Premium Channels */}
-        <div className="mb-12">
+        <div className="mb-12 border border-white/25 rounded-2xl p-5">
           <h2 className="text-lg font-semibold text-white/60 mb-4">Premium Channels</h2>
           <div className="flex gap-6 overflow-x-auto pb-3">
             {CHANNELS.map(channel => (
