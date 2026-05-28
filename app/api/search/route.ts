@@ -28,7 +28,7 @@ User query: "${query}"
 Rules:
 - intent = "pick" if the user describes a mood, feeling, or vague preference (e.g. "something funny", "I want a thriller tonight", "light and easy")
 - intent = "search" if the user mentions a specific actor, title, genre, era, or detailed preference
-- searchQuery = 2-4 optimized YouTube search words (no "free", "full movie", "watch online")
+- searchQuery = 2-4 words optimized to find FREE full movies on YouTube. Always end with "full movie". Never use "trailer", "clip", "rent", or "buy"
 - If intent is "pick", also include a pick object from this catalog:
   [{"id":"FlOra-dwLzg","title":"Wrath of Man","genre":"action thriller"},{"id":"BqluXcZ9RyU","title":"Honest Thief","genre":"action romance"},{"id":"SebuC1iyhug","title":"First Blood","genre":"action drama"},{"id":"nzn1m-hbPYw","title":"Bumblebee","genre":"sci-fi family"},{"id":"K4zHXPQApic","title":"The Chronicles of Riddick","genre":"sci-fi action"},{"id":"naG_MI5dsbo","title":"Payback","genre":"crime action"},{"id":"gNK-Yr8ktgM","title":"The Spy Next Door","genre":"comedy family"},{"id":"mAVs05GzChs","title":"Evolution","genre":"sci-fi comedy"},{"id":"EMvIgNcej-w","title":"Blitz","genre":"crime thriller"},{"id":"dygYCbG-jNk","title":"A-X-L","genre":"sci-fi family"}]
 
@@ -48,9 +48,10 @@ Reply ONLY with JSON:
     const content = data.content?.[0]?.text;
     if (!content) throw new Error('No AI response');
 
-    const parsed = JSON.parse(content.trim());
+    const clean = content.trim().replace(/```(?:json)?/g, "").trim();
+    const parsed = JSON.parse(clean);
     return NextResponse.json(parsed);
-  } catch {
+  } catch (err) { console.error("SEARCH ERROR:", err);
     return NextResponse.json({ searchQuery: '', intent: 'search' });
   }
 }

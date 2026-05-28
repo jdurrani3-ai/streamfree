@@ -1,0 +1,8 @@
+[
+  {"id":"fallback-tubi-1","provider":"tubi","title":"The Last Boy Scout","year":1991,"runtime":105,"posterUrl":null,"watchUrl":"https://tubitv.com/home","source":"fallback","region":"US"},
+  {"id":"fallback-tubi-2","provider":"tubi","title":"Cliffhanger","year":1993,"runtime":112,"posterUrl":null,"watchUrl":"https://tubitv.com/home","source":"fallback","region":"US"},
+  {"id":"fallback-tubi-3","provider":"tubi","title":"Universal Soldier","year":1992,"runtime":102,"posterUrl":null,"watchUrl":"https://tubitv.com/home","source":"fallback","region":"US"},
+  {"id":"fallback-pluto-1","provider":"pluto","title":"Platoon","year":1986,"runtime":120,"posterUrl":null,"watchUrl":"https://pluto.tv/en/on-demand/movies","source":"fallback","region":"US"},
+  {"id":"fallback-pluto-2","provider":"pluto","title":"The Running Man","year":1987,"runtime":101,"posterUrl":null,"watchUrl":"https://pluto.tv/en/on-demand/movies","source":"fallback","region":"US"},
+  {"id":"fallback-pluto-3","provider":"pluto","title":"Cobra","year":1986,"runtime":87,"posterUrl":null,"watchUrl":"https://pluto.tv/en/on-demand/movies","source":"fallback","region":"US"}
+]
