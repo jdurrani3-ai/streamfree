@@ -27,7 +27,7 @@ const FALLBACK: NormalizedMovie[] = [
 const GENRE_MAP: Record<string, number> = {
   'Action': 1, 'Comedy': 4, 'Drama': 7, 'Horror': 11, 'Thriller': 17,
   'Sci-Fi': 15, 'Romance': 14, 'Documentary': 6, 'Animation': 3,
-  'Crime': 5, 'Family': 8, 'Kids': 21, 'Western': 19,
+  'Crime': 5, 'Family': 8, 'Kids': 8, 'Western': 19,
   'Bollywood/Music': 12, 'International': 6,
 };
 
