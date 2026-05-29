@@ -118,20 +118,20 @@ const FREE_MOVIES_CATALOG = [
 ];
 
 const GENRES = [
-  { name: 'Action', emoji: '💥', query: 'action', color: 'bg-red-700' },
-  { name: 'Animation', emoji: '🪄', query: 'animated', color: 'bg-orange-700' },
-  { name: 'Bollywood/Music', emoji: '🎶', query: 'bollywood music hindi', color: 'bg-rose-500' },
-  { name: 'Comedy', emoji: '😄', query: 'comedy', color: 'bg-yellow-700' },
-  { name: 'Crime & Thriller', emoji: '🕵️', query: 'crime thriller detective', color: 'bg-zinc-700' },
-  { name: 'Documentary', emoji: '🎥', query: 'documentary', color: 'bg-teal-800' },
-  { name: 'Drama', emoji: '🎭', query: 'drama', color: 'bg-purple-800' },
-  { name: 'Family', emoji: '👨‍👩‍👧‍👦', query: 'family', color: 'bg-green-700' },
-  { name: 'Horror', emoji: '👻', query: 'horror', color: 'bg-gray-800' },
-  { name: 'International', emoji: '🌍', query: 'foreign film english subtitles', color: 'bg-indigo-800' },
-  { name: 'Kids', emoji: '🧸', query: 'kids children movie', color: 'bg-cyan-700' },
-  { name: 'Romance', emoji: '💘', query: 'romance', color: 'bg-pink-700' },
-  { name: 'Sci-Fi', emoji: '🚀', query: 'science fiction', color: 'bg-blue-800' },
-  { name: 'Western', emoji: '🤠', query: 'western cowboy', color: 'bg-amber-800' },
+  { name: 'Action', emoji: '💥', query: 'action', color: 'bg-red-700', thumb: 'WhQYVJSKUC4', count: '1,250' },
+  { name: 'Animation', emoji: '🪄', query: 'animated', color: 'bg-orange-700', thumb: 'kq7kRmaL4PE', count: '320' },
+  { name: 'Bollywood/Music', emoji: '🎶', query: 'bollywood music hindi', color: 'bg-rose-500', thumb: 'NgBoMJy386M', count: '480' },
+  { name: 'Comedy', emoji: '😄', query: 'comedy', color: 'bg-yellow-700', thumb: 'smGU6U0e8S0', count: '892' },
+  { name: 'Crime & Thriller', emoji: '🕵️', query: 'crime thriller detective', color: 'bg-zinc-700', thumb: 'oz7wymKGzOU', count: '1,140' },
+  { name: 'Documentary', emoji: '🎥', query: 'documentary', color: 'bg-teal-800', thumb: 'c8aFcHFu8QM', count: '642' },
+  { name: 'Drama', emoji: '🎭', query: 'drama', color: 'bg-purple-800', thumb: 'uYPbbksJxIg', count: '1,380' },
+  { name: 'Family', emoji: '👨‍👩‍👧‍👦', query: 'family', color: 'bg-green-700', thumb: '7TavVZMewpY', count: '785' },
+  { name: 'Horror', emoji: '👻', query: 'horror', color: 'bg-gray-800', thumb: 'WR7cc5t7tv8', count: '662' },
+  { name: 'International', emoji: '🌍', query: 'foreign film english subtitles', color: 'bg-indigo-800', thumb: '5xH0HfJHsaY', count: '1,023' },
+  { name: 'Kids', emoji: '🧸', query: 'kids children movie', color: 'bg-cyan-700', thumb: 'xlnPHQ3TLX8', count: '512' },
+  { name: 'Romance', emoji: '💘', query: 'romance', color: 'bg-pink-700', thumb: '0pdqf4P9MB8', count: '856' },
+  { name: 'Sci-Fi', emoji: '🚀', query: 'science fiction', color: 'bg-blue-800', thumb: 'Way9Dexny3w', count: '678' },
+  { name: 'Western', emoji: '🤠', query: 'western cowboy', color: 'bg-amber-800', thumb: 'LoebZZ8K5N0', count: '430' },
 ];
 
 const DURATION_FILTERS = [
@@ -544,18 +544,31 @@ export default function Home() {
         )}
 
         {/* Genre Browse */}
-        <div id="genre-section" className="mb-8 border-2 border-orange-500/50 rounded-2xl px-5 pb-5 pt-7 shadow-[0_0_30px_rgba(234,88,12,0.1)] overflow-visible">
-          <h2 className="text-lg font-semibold text-white/60 mb-4">Browse by Genre</h2>
-          <div className="flex flex-wrap gap-3">
-            <button onClick={handleReset}
-              className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-zinc-600 text-white text-sm font-medium transition-all hover:brightness-125 hover:outline hover:outline-2 hover:outline-orange-400">
-              <span className="text-sm font-medium">✕ Reset</span>
-            </button>
+        <div id="genre-section" className="mb-8">
+          <div className="flex items-start justify-between mb-3">
+            <div>
+              <h2 className="text-xl font-bold text-white">Browse by Genre</h2>
+              <p className="text-white/40 text-sm mt-1">Find free movies by mood, category, or what you feel like watching.</p>
+            </div>
+            {activeGenre && (
+              <button onClick={handleReset} className="text-orange-400 hover:text-orange-300 text-sm font-semibold transition-colors mt-1 flex items-center gap-1">
+                ✕ Reset
+              </button>
+            )}
+          </div>
+          <div className="grid grid-cols-4 md:grid-cols-7 gap-3">
             {GENRES.map(genre => (
               <button key={genre.name} onClick={() => handleGenreClick(genre)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 text-white text-sm font-medium transition-all hover:brightness-125 hover:outline hover:outline-2 hover:outline-orange-400 origin-bottom ${activeGenre === genre.name ? 'ring-2 ring-white/40 brightness-125' : ''} ${genre.color}`}>
-                <span>{genre.emoji}</span>
-                <span>{genre.name}</span>
+                className="cursor-pointer group flex flex-col">
+                <div className={`relative h-24 rounded-xl overflow-hidden w-full transition-all ${activeGenre === genre.name ? 'ring-2 ring-orange-500 shadow-[0_0_20px_rgba(234,88,12,0.4)]' : 'hover:ring-2 hover:ring-orange-500/60'}`}>
+                  <img src={`https://i.ytimg.com/vi/${genre.thumb}/maxresdefault.jpg`} alt={genre.name}
+                    className="absolute inset-0 w-full h-full object-cover object-top" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                </div>
+                <div className="mt-2 text-center px-1">
+                  <p className={`text-xs font-semibold leading-tight ${activeGenre === genre.name ? 'text-orange-400' : 'text-white/80'}`}>{genre.name}</p>
+                  <p className="text-white/35 text-xs mt-0.5">{genre.count} titles</p>
+                </div>
               </button>
             ))}
           </div>
