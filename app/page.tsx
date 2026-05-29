@@ -142,18 +142,18 @@ const DURATION_FILTERS = [
 ];
 
 const CHANNELS = [
-  { name: 'Paramount+', short: 'P+', color: 'bg-blue-600', url: 'https://www.paramountplus.com' },
-  { name: 'Showtime', short: 'SHO', color: 'bg-red-600', url: 'https://www.showtime.com' },
-  { name: 'Starz', short: 'STARZ', color: 'bg-zinc-700', url: 'https://www.starz.com' },
-  { name: 'AMC+', short: 'AMC+', color: 'bg-red-900', url: 'https://www.amcplus.com' },
-  { name: 'MGM+', short: 'MGM+', color: 'bg-blue-900', url: 'https://www.mgmplus.com' },
-  { name: 'Peacock', short: '🦚', color: 'bg-purple-700', url: 'https://www.peacocktv.com' },
-  { name: 'BritBox', short: 'BB', color: 'bg-blue-700', url: 'https://www.britbox.com' },
-  { name: 'Apple TV+', short: 'TV+', color: 'bg-zinc-800', url: 'https://tv.apple.com' },
-  { name: 'Shudder', short: 'SHD', color: 'bg-green-900', url: 'https://www.shudder.com' },
-  { name: 'ViX', short: 'ViX', color: 'bg-orange-500', url: 'https://www.vix.com' },
-  { name: 'Acorn TV', short: 'ACN', color: 'bg-green-700', url: 'https://acorn.tv' },
-  { name: 'Criterion', short: 'CC', color: 'bg-stone-800', url: 'https://www.criterionchannel.com' },
+  { name: 'Paramount+', short: 'P+', color: 'bg-blue-600', url: 'https://www.paramountplus.com', desc: 'Entertainment & Sports' },
+  { name: 'Showtime', short: 'SHO', color: 'bg-red-600', url: 'https://www.showtime.com', desc: 'Premium Drama' },
+  { name: 'Starz', short: 'STARZ', color: 'bg-zinc-700', url: 'https://www.starz.com', desc: 'Hit Movies & Series' },
+  { name: 'AMC+', short: 'AMC+', color: 'bg-red-900', url: 'https://www.amcplus.com', desc: 'Award-Winning TV' },
+  { name: 'MGM+', short: 'MGM+', color: 'bg-blue-900', url: 'https://www.mgmplus.com', desc: 'Blockbuster Movies' },
+  { name: 'Peacock', short: '🦚', color: 'bg-purple-700', url: 'https://www.peacocktv.com', desc: 'NBCUniversal Content' },
+  { name: 'BritBox', short: 'BB', color: 'bg-blue-700', url: 'https://www.britbox.com', desc: 'British TV & Films' },
+  { name: 'Apple TV+', short: 'TV+', color: 'bg-zinc-800', url: 'https://tv.apple.com', desc: 'Apple Originals' },
+  { name: 'Shudder', short: 'SHD', color: 'bg-green-900', url: 'https://www.shudder.com', desc: 'Horror & Thriller' },
+  { name: 'ViX', short: 'ViX', color: 'bg-orange-500', url: 'https://www.vix.com', desc: 'Spanish Language' },
+  { name: 'Acorn TV', short: 'ACN', color: 'bg-green-700', url: 'https://acorn.tv', desc: 'British & International' },
+  { name: 'Criterion', short: 'CC', color: 'bg-stone-800', url: 'https://www.criterionchannel.com', desc: 'Classic Cinema' },
 ];
 
 const RATING_COLORS: Record<string, string> = {
@@ -403,6 +403,9 @@ export default function Home() {
     setActiveGenre(genre.name);
     setQuery('');
     fetchMovies(genre.query, genre.name);
+    setTimeout(() => {
+      document.getElementById('results-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 300);
   };
 
   const handleReset = () => {
@@ -543,60 +546,21 @@ export default function Home() {
           </div>
         )}
 
-        {/* Genre Browse */}
-        <div id="genre-section" className="mb-8">
-          <div className="flex items-start justify-between mb-3">
-            <div>
-              <h2 className="text-xl font-bold text-white">Browse by Genre</h2>
-              <p className="text-white/40 text-sm mt-1">Find free movies by mood, category, or what you feel like watching.</p>
-            </div>
-            {activeGenre && (
-              <button onClick={handleReset} className="text-orange-400 hover:text-orange-300 text-sm font-semibold transition-colors mt-1 flex items-center gap-1">
-                ✕ Reset
-              </button>
-            )}
-          </div>
-          <div className="grid grid-cols-4 md:grid-cols-7 gap-3">
-            {GENRES.map(genre => (
-              <button key={genre.name} onClick={() => handleGenreClick(genre)}
-                className="cursor-pointer group flex flex-col">
-                <div className={`relative h-24 rounded-xl overflow-hidden w-full transition-all ${activeGenre === genre.name ? 'ring-2 ring-orange-500 shadow-[0_0_20px_rgba(234,88,12,0.4)]' : 'hover:ring-2 hover:ring-orange-500/60'}`}>
-                  <img src={`https://i.ytimg.com/vi/${genre.thumb}/maxresdefault.jpg`} alt={genre.name}
-                    className="absolute inset-0 w-full h-full object-cover object-top" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-                </div>
-                <div className="mt-2 text-center px-1">
-                  <p className={`text-xs font-semibold leading-tight ${activeGenre === genre.name ? 'text-orange-400' : 'text-white/80'}`}>{genre.name}</p>
-                  <p className="text-white/35 text-xs mt-0.5">{genre.count} titles</p>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* Live Section */}
-        <div id="live-section" className="mb-12 border-2 border-orange-500/50 rounded-2xl px-5 pb-5 pt-7 shadow-[0_0_30px_rgba(234,88,12,0.1)] overflow-visible">
-          <button onClick={() => setLiveOpen(o => !o)} className="flex items-center gap-2 mb-3 group cursor-pointer">
-            <h2 className="text-lg font-semibold text-white/60 group-hover:text-white/90 transition-colors">🔴 Live</h2>
-            <span className="text-white/30 text-xs ml-1">{liveOpen ? "▲" : "▼"}</span>
-          </button>
+        <div id="live-section" className="mb-12">
+          <div className="flex items-start justify-between mb-5">
+            <div>
+              <div className="flex items-center gap-2 mb-1"><span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse"></span><span className="text-xs font-bold text-red-400 tracking-widest uppercase">Live Now</span></div>
+              <h2 className="text-3xl font-black text-white">Live TV &amp; Events</h2>
+              <p className="text-white/40 text-sm mt-1">Watch breaking news, live sports, and must-see events happening right now.</p>
+            </div>
+            <button onClick={() => setLiveOpen(o => !o)} className="text-white/30 hover:text-white/60 transition-colors mt-2 text-sm">{liveOpen ? '▲' : '▼'}</button>
+          </div>
           <div style={{display: liveOpen ? "block" : "none"}}>
-          <div className="flex gap-2 mb-4">
-            <button
-              onClick={() => handleLiveTab('news')}
-              className={`px-4 py-1.5 rounded-full text-sm border transition-all cursor-pointer ${liveTab === 'news' ? 'border-red-500 bg-red-500/20 text-red-300' : 'border-white/20 bg-white/5 hover:border-white/40 text-white/60'}`}>
-              📰 News
-            </button>
-            <button
-              onClick={() => handleLiveTab('sports')}
-              className={`px-4 py-1.5 rounded-full text-sm border transition-all cursor-pointer ${liveTab === 'sports' ? 'border-green-500 bg-green-500/20 text-green-300' : 'border-white/20 bg-white/5 hover:border-white/40 text-white/60'}`}>
-              🏆 Sports
-            </button>
-            <button
-              onClick={() => handleLiveTab('scores')}
-              className={`px-4 py-1.5 rounded-full text-sm border transition-all cursor-pointer ${liveTab === 'scores' ? 'border-yellow-500 bg-yellow-500/20 text-yellow-300' : 'border-white/20 bg-white/5 hover:border-white/40 text-white/60'}`}>
-              Scores
-            </button>
+          <div className="flex gap-2 mb-6 flex-wrap">
+            <button onClick={() => handleLiveTab('news')} className={`px-5 py-2 rounded-full text-sm font-medium border transition-all cursor-pointer ${liveTab === 'news' ? 'border-orange-500 bg-orange-500/15 text-white' : 'border-white/15 bg-white/5 text-white/50 hover:border-white/30 hover:text-white/80'}`}>📰 News</button>
+            <button onClick={() => handleLiveTab('sports')} className={`px-5 py-2 rounded-full text-sm font-medium border transition-all cursor-pointer ${liveTab === 'sports' ? 'border-orange-500 bg-orange-500/15 text-white' : 'border-white/15 bg-white/5 text-white/50 hover:border-white/30 hover:text-white/80'}`}>🏆 Sports</button>
+            <button onClick={() => handleLiveTab('scores')} className={`px-5 py-2 rounded-full text-sm font-medium border transition-all cursor-pointer ${liveTab === 'scores' ? 'border-orange-500 bg-orange-500/15 text-white' : 'border-white/15 bg-white/5 text-white/50 hover:border-white/30 hover:text-white/80'}`}>📊 Scores</button>
           </div>
 
           {liveTab !== 'scores' && liveLoading && (
@@ -674,23 +638,41 @@ export default function Home() {
           )}
 
           {liveTab !== 'scores' && !liveLoading && liveTab === 'news' && (
-            <div className="flex gap-3 mb-4 flex-wrap">
-              {[
-                { name: 'Al Jazeera', url: 'https://www.youtube.com/watch?v=gCNeDWCI0vo', color: 'bg-yellow-700' },
-                { name: 'Bloomberg', url: 'https://www.youtube.com/watch?v=iEpJwprxDdk', color: 'bg-blue-800' },
-                { name: 'DW News', url: 'https://www.youtube.com/watch?v=LuKwFajn37U', color: 'bg-zinc-700' },
-                { name: 'Yahoo Finance', url: 'https://www.youtube.com/watch?v=KQp-e_XQnDE', color: 'bg-purple-800' },
-                { name: 'NDTV', url: 'https://www.youtube.com/watch?v=uoK1dFpMo98', color: 'bg-orange-800' },
-                { name: 'Geo News', url: 'https://www.youtube.com/watch?v=_FwympjOSNE', color: 'bg-green-800' },
-                { name: 'Euronews', url: 'https://www.youtube.com/watch?v=pykpO5kQJ98', color: 'bg-blue-900' },
-                { name: 'Africa Live', url: 'https://www.youtube.com/watch?v=NQjabLGdP5g', color: 'bg-yellow-900' },
-                { name: 'TMZ', url: 'https://www.youtube.com/watch?v=G2kbkYtsbAA', color: 'bg-pink-800' },
-              ].map(ch => (
-                <a key={ch.name} href={ch.url} target="_blank" rel="noopener noreferrer"
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-white text-xs font-bold border border-white/10 hover:border-red-500/50 hover:brightness-125 hover:outline hover:outline-2 hover:outline-orange-400 transition-all ${ch.color}`}>
-                  <span className="text-red-400 animate-pulse">●</span> {ch.name}
-                </a>
-              ))}
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-white/60">Quick Switch</span>
+                  <span className="text-xs text-white/30">Jump to another live channel</span>
+                </div>
+              </div>
+              <div className="flex gap-3 overflow-x-auto pb-2" style={{scrollbarWidth:'none'}}>
+                {[
+                  { name: 'Al Jazeera', url: 'https://www.youtube.com/watch?v=gCNeDWCI0vo', color: 'bg-yellow-700' },
+                  { name: 'Bloomberg', url: 'https://www.youtube.com/watch?v=iEpJwprxDdk', color: 'bg-blue-800' },
+                  { name: 'DW News', url: 'https://www.youtube.com/watch?v=LuKwFajn37U', color: 'bg-zinc-600' },
+                  { name: 'Yahoo Finance', url: 'https://www.youtube.com/watch?v=KQp-e_XQnDE', color: 'bg-purple-800' },
+                  { name: 'NDTV', url: 'https://www.youtube.com/watch?v=uoK1dFpMo98', color: 'bg-orange-800' },
+                  { name: 'Geo News', url: 'https://www.youtube.com/watch?v=_FwympjOSNE', color: 'bg-green-800' },
+                  { name: 'Euronews', url: 'https://www.youtube.com/watch?v=pykpO5kQJ98', color: 'bg-blue-900' },
+                  { name: 'Africa Live', url: 'https://www.youtube.com/watch?v=NQjabLGdP5g', color: 'bg-yellow-900' },
+                  { name: 'TMZ', url: 'https://www.youtube.com/watch?v=G2kbkYtsbAA', color: 'bg-pink-800' },
+                ].map(ch => (
+                  <a key={ch.name} href={ch.url} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-3 bg-white/5 border border-white/10 hover:border-orange-500/40 rounded-xl px-4 py-2.5 flex-shrink-0 transition-all min-w-[150px]">
+                    <div className={`w-8 h-8 rounded-lg ${ch.color} flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>
+                      {ch.name.slice(0,2).toUpperCase()}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse flex-shrink-0"></span>
+                        <span className="text-white text-xs font-semibold">{ch.name}</span>
+                      </div>
+                      <span className="text-white/35 text-xs">Live Now</span>
+                    </div>
+                    <span className="text-white/25 ml-auto text-sm">›</span>
+                  </a>
+                ))}
+              </div>
             </div>
           )}
 
@@ -702,10 +684,14 @@ export default function Home() {
                 const avatarColor = avatarColors[(video.channelTitle?.charCodeAt(0) || 0) % avatarColors.length];
                 return (
                   <div key={video.id} className="group cursor-pointer" onClick={() => window.open(video.watchUrl, '_blank')}>
-                    <div className="relative overflow-hidden rounded-2xl border border-white/10 group-hover:border-red-500/40 transition-all group-hover:scale-105 flex flex-col" style={{height:'310px'}}>
-                      <div className="relative flex-shrink-0" style={{height:'160px'}}>
+                    <div className="relative overflow-hidden rounded-2xl border border-white/10 group-hover:border-orange-500/40 transition-all">
+                      <div className="relative w-full aspect-video">
                         {video.thumbnailUrl ? (
-                          <img src={video.thumbnailUrl} alt={video.title} className="w-full h-full object-cover" />
+                          <>
+                            <img src={video.thumbnailUrl} alt={video.title} className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                            <div className="absolute top-2 left-2 flex items-center gap-1 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded"><span className="w-1.5 h-1.5 bg-white rounded-full inline-block animate-pulse"></span>LIVE</div>
+                          </>
                         ) : (
                           <div className="w-full h-full bg-gradient-to-b from-zinc-800 to-zinc-900 flex items-center justify-center">
                             <span className="text-4xl opacity-60">📺</span>
@@ -713,7 +699,7 @@ export default function Home() {
                         )}
 
                       </div>
-                      <div className="flex flex-col justify-between flex-1 px-3 py-2 bg-zinc-900">
+                      <div className="p-3 bg-zinc-900/90">
                         <div>
                           <div className="flex items-center gap-2 mb-1.5">
                             <span className="text-white text-xs font-bold px-2 py-0.5 rounded-full bg-red-600 flex items-center gap-1"><span className="w-1.5 h-1.5 bg-white rounded-full inline-block"></span>LIVE</span>
@@ -723,9 +709,9 @@ export default function Home() {
                             <div className={`w-5 h-5 rounded-full ${avatarColor} flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>{initial}</div>
                             <p className="text-white/50 text-xs truncate">{video.channelTitle}</p>
                           </div>
-                          <p className="text-white text-xs font-medium leading-snug line-clamp-2">{decodeHtml(video.title)}</p>
+                          <p className="text-white text-sm font-bold leading-snug line-clamp-2 mb-3">{decodeHtml(video.title)}</p>
                         </div>
-                        <div className="bg-white rounded-full py-1.5 text-center mt-2">
+                        <div className="bg-gradient-to-r from-orange-600 to-yellow-400 rounded-full py-1.5 text-center">
                           <span className="text-black text-xs font-bold">▶ Watch Live</span>
                         </div>
                       </div>
@@ -738,22 +724,63 @@ export default function Home() {
         </div>
 
           </div>
-        {/* Premium Channels */}
-        <div id="channels-section" className="mb-12 border-2 border-orange-500/50 rounded-2xl px-5 pb-5 pt-7 shadow-[0_0_30px_rgba(234,88,12,0.1)] overflow-visible">
-          <h2 className="text-lg font-semibold text-white/60 mb-4">Premium Channels</h2>
-          <div className="flex gap-6 overflow-x-auto pb-3 pt-2">
-            {CHANNELS.map(channel => (
-              <a key={channel.name} href={channel.url} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 min-w-[72px] group hover:scale-105 transition-transform">
-                <div className={`w-16 h-16 rounded-full ${channel.color} border-2 border-white/10 group-hover:border-orange-400 group-hover:outline group-hover:outline-2 group-hover:outline-orange-400 transition-all flex items-center justify-center`}>
-                  <span className="text-white text-sm font-bold text-center leading-tight px-1">{channel.short}</span>
+
+        {/* Genre Browse */}
+        <div id="genre-section" className="mb-8">
+          <div className="flex items-start justify-between mb-3">
+            <div>
+              <h2 className="text-xl font-bold text-white">Browse by Genre</h2>
+              <p className="text-white/40 text-sm mt-1">Find free movies by mood, category, or what you feel like watching.</p>
+            </div>
+            {activeGenre && (
+              <button onClick={handleReset} className="text-orange-400 hover:text-orange-300 text-sm font-semibold transition-colors mt-1 flex items-center gap-1">
+                ✕ Reset
+              </button>
+            )}
+          </div>
+          <div className="grid grid-cols-4 md:grid-cols-7 gap-3">
+            {GENRES.map(genre => (
+              <button key={genre.name} onClick={() => handleGenreClick(genre)}
+                className="cursor-pointer group flex flex-col">
+                <div className={`relative h-24 rounded-xl overflow-hidden w-full transition-all ${activeGenre === genre.name ? 'ring-2 ring-orange-500 shadow-[0_0_20px_rgba(234,88,12,0.4)]' : 'hover:ring-2 hover:ring-orange-500/60'}`}>
+                  <img src={`https://i.ytimg.com/vi/${genre.thumb}/maxresdefault.jpg`} alt={genre.name}
+                    className="absolute inset-0 w-full h-full object-cover object-top" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                 </div>
-                <span className="text-xs text-white/50 group-hover:text-white/80 text-center whitespace-nowrap">{channel.name}</span>
-                <span className="text-xs text-green-400 group-hover:text-green-300">Try now</span>
-              </a>
+                <div className="mt-2 text-center px-1">
+                  <p className={`text-xs font-semibold leading-tight ${activeGenre === genre.name ? 'text-orange-400' : 'text-white/80'}`}>{genre.name}</p>
+                  <p className="text-white/35 text-xs mt-0.5">{genre.count} titles</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+        {/* Add-On Channels */}
+        <div id="channels-section" className="mb-12">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-xl font-bold text-white">Add-On Channels 🏆</h2>
+          </div>
+          <p className="text-white/40 text-sm mb-5">Premium channels. No cable required. Cancel anytime.</p>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-6 gap-4">
+            {CHANNELS.map(channel => (
+              <div key={channel.name} className="bg-white/5 border border-white/10 hover:border-orange-500/40 rounded-2xl p-4 flex flex-col items-center gap-3 transition-all group">
+                <div className={`w-14 h-14 rounded-xl ${channel.color} flex items-center justify-center flex-shrink-0`}>
+                  <span className="text-white text-sm font-black text-center leading-tight px-1">{channel.short}</span>
+                </div>
+                <div className="text-center">
+                  <p className="text-white text-xs font-bold">{channel.name}</p>
+                  <p className="text-white/40 text-xs mt-0.5">{channel.desc}</p>
+                </div>
+                <a href={channel.url} target="_blank" rel="noopener noreferrer"
+                  className="bg-transparent border border-orange-500/50 text-orange-400 hover:bg-orange-500/10 text-xs font-bold px-4 py-1.5 rounded-full transition-all w-full text-center">
+                  Explore
+                </a>
+              </div>
             ))}
           </div>
         </div>
 
+        <div id="results-section"></div>
         {loading && (
           <div className="text-center py-20">
             <div className="inline-block w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mb-4"></div>
