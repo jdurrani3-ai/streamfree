@@ -413,8 +413,8 @@ export default function Home() {
       <header className="border-b border-white/10 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-2xl">🎬</span>
-            <span className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-yellow-400 bg-clip-text text-transparent">StreamFree</span>
+            <img src="/logo.png" alt="StreamFree" className="h-10 w-10 object-contain" />
+            <span className="text-3xl font-bold"><span className="text-white">Stream</span><span className="bg-gradient-to-r from-orange-500 to-yellow-400 bg-clip-text text-transparent">Free</span></span>
           </div>
           
         </div>
