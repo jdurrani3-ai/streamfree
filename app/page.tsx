@@ -409,14 +409,14 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white">
+    <div className="min-h-screen text-white" style={{background: 'linear-gradient(135deg, #0d1117 0%, #0a0a0f 50%, #111318 100%)'}}>
       <header className="border-b border-white/10 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-2xl">🎬</span>
-            <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">StreamFree</span>
+            <span className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-yellow-400 bg-clip-text text-transparent">StreamFree</span>
           </div>
-          <p className="text-sm text-white/40">Free movies, powered by AI</p>
+          
         </div>
       </header>
 
@@ -455,9 +455,9 @@ export default function Home() {
             <input type="text" value={query} onChange={e => setQuery(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSubmit()}
               placeholder='"Tom Cruise action" or "something funny tonight"'
-              className="flex-1 bg-white/10 border border-white/20 rounded-xl px-5 py-4 text-white placeholder-white/30 focus:outline-none focus:border-purple-500 transition-all" />
+              className="flex-1 bg-white/5 border-2 border-orange-500/40 rounded-xl px-5 py-4 text-white placeholder-white/30 focus:outline-none focus:border-orange-500 transition-all shadow-[0_0_30px_rgba(234,88,12,0.08)]" />
             <button onClick={handleSubmit} disabled={loading || !query.trim()}
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 disabled:opacity-40 disabled:cursor-not-allowed px-6 py-4 rounded-xl font-semibold transition-all">
+              className="bg-gradient-to-r from-orange-600 to-yellow-400 hover:from-orange-500 hover:to-yellow-300 disabled:opacity-40 disabled:cursor-not-allowed px-6 py-4 rounded-xl font-bold text-black transition-all">
               {loading ? '...' : '→'}
             </button>
           </div>
@@ -488,16 +488,16 @@ export default function Home() {
         )}
 
         {/* Genre Browse */}
-        <div className="mb-8 border border-white/25 rounded-2xl p-5">
+        <div className="mb-8 border-2 border-orange-500/50 rounded-2xl px-5 pb-5 pt-7 shadow-[0_0_30px_rgba(234,88,12,0.1)] overflow-visible">
           <h2 className="text-lg font-semibold text-white/60 mb-4">Browse by Genre</h2>
           <div className="flex flex-wrap gap-3">
             <button onClick={handleReset}
-              className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-zinc-600 text-white text-sm font-medium transition-all hover:brightness-110">
+              className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-zinc-600 text-white text-sm font-medium transition-all hover:brightness-125 hover:outline hover:outline-2 hover:outline-orange-400">
               <span className="text-sm font-medium">✕ Reset</span>
             </button>
             {GENRES.map(genre => (
               <button key={genre.name} onClick={() => handleGenreClick(genre)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 text-white text-sm font-medium transition-all hover:border-white/40 hover:brightness-110 ${activeGenre === genre.name ? 'ring-2 ring-white/40 brightness-125' : ''} ${genre.color}`}>
+                className={`flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 text-white text-sm font-medium transition-all hover:brightness-125 hover:outline hover:outline-2 hover:outline-orange-400 origin-bottom ${activeGenre === genre.name ? 'ring-2 ring-white/40 brightness-125' : ''} ${genre.color}`}>
                 <span>{genre.emoji}</span>
                 <span>{genre.name}</span>
               </button>
@@ -506,7 +506,7 @@ export default function Home() {
         </div>
 
         {/* Live Section */}
-        <div className="mb-12 border border-white/25 rounded-2xl p-5">
+        <div className="mb-12 border-2 border-orange-500/50 rounded-2xl px-5 pb-5 pt-7 shadow-[0_0_30px_rgba(234,88,12,0.1)] overflow-visible">
           <button onClick={() => setLiveOpen(o => !o)} className="flex items-center gap-2 mb-3 group cursor-pointer">
             <h2 className="text-lg font-semibold text-white/60 group-hover:text-white/90 transition-colors">🔴 Live</h2>
             <span className="text-white/30 text-xs ml-1">{liveOpen ? "▲" : "▼"}</span>
@@ -618,7 +618,7 @@ export default function Home() {
                 { name: 'TMZ', url: 'https://www.youtube.com/watch?v=G2kbkYtsbAA', color: 'bg-pink-800' },
               ].map(ch => (
                 <a key={ch.name} href={ch.url} target="_blank" rel="noopener noreferrer"
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-white text-xs font-bold border border-white/10 hover:border-red-500/50 transition-all ${ch.color}`}>
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-white text-xs font-bold border border-white/10 hover:border-red-500/50 hover:brightness-125 hover:outline hover:outline-2 hover:outline-orange-400 transition-all ${ch.color}`}>
                   <span className="text-red-400 animate-pulse">●</span> {ch.name}
                 </a>
               ))}
@@ -670,12 +670,12 @@ export default function Home() {
 
           </div>
         {/* Premium Channels */}
-        <div className="mb-12 border border-white/25 rounded-2xl p-5">
+        <div className="mb-12 border-2 border-orange-500/50 rounded-2xl px-5 pb-5 pt-7 shadow-[0_0_30px_rgba(234,88,12,0.1)] overflow-visible">
           <h2 className="text-lg font-semibold text-white/60 mb-4">Premium Channels</h2>
-          <div className="flex gap-6 overflow-x-auto pb-3">
+          <div className="flex gap-6 overflow-x-auto pb-3 pt-2">
             {CHANNELS.map(channel => (
-              <a key={channel.name} href={channel.url} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 min-w-[72px] group">
-                <div className={`w-16 h-16 rounded-full ${channel.color} border-2 border-white/10 group-hover:border-purple-500 transition-all flex items-center justify-center`}>
+              <a key={channel.name} href={channel.url} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 min-w-[72px] group hover:scale-105 transition-transform">
+                <div className={`w-16 h-16 rounded-full ${channel.color} border-2 border-white/10 group-hover:border-orange-400 group-hover:outline group-hover:outline-2 group-hover:outline-orange-400 transition-all flex items-center justify-center`}>
                   <span className="text-white text-sm font-bold text-center leading-tight px-1">{channel.short}</span>
                 </div>
                 <span className="text-xs text-white/50 group-hover:text-white/80 text-center whitespace-nowrap">{channel.name}</span>
