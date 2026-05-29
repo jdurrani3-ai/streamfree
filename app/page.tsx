@@ -234,6 +234,7 @@ export default function Home() {
   const [hasFreeMovies, setHasFreeMovies] = useState(false);
   const [isTextSearch, setIsTextSearch] = useState(false);
   const [liveOpen, setLiveOpen] = useState(false);
+  const [activeNav, setActiveNav] = useState('home');
   const decodeHtml = (str: string) => str.replace(/&amp;/g,'&').replace(/&#39;/g,"'").replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
   const [liveVideos, setLiveVideos] = useState<LiveVideo[]>([]);
   const [scores, setScores] = useState<SportScores[]>([]);
@@ -268,6 +269,17 @@ export default function Home() {
     if (durationFilter === 'over120') return m.runtimeMinutes > 120;
     return true;
   });
+
+  const scrollToSection = (section: string) => {
+    setActiveNav(section);
+    if (section === 'home') window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (section === 'movies') document.getElementById('genre-section')?.scrollIntoView({ behavior: 'smooth' });
+    if (section === 'live') {
+      setLiveOpen(true);
+      document.getElementById('live-section')?.scrollIntoView({ behavior: 'smooth' });
+    }
+    if (section === 'channels') document.getElementById('channels-section')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   const fetchScores = async () => {
     setScoresLoading(true);
@@ -410,13 +422,28 @@ export default function Home() {
 
   return (
     <div className="min-h-screen text-white" style={{background: 'linear-gradient(135deg, #0d1117 0%, #0a0a0f 50%, #111318 100%)'}}>
-      <header className="border-b border-white/10 px-6 py-4">
+      <header className="border-b border-white/10 px-6 py-4 sticky top-0 z-50 backdrop-blur-md bg-black/60">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <img src="/logo.png" alt="StreamFree" className="h-10 w-10 object-contain" />
-            <span className="text-3xl font-bold"><span className="text-white">Stream</span><span className="bg-gradient-to-r from-orange-500 to-yellow-400 bg-clip-text text-transparent">Free</span></span>
+          <div className="flex items-center gap-8">
+            <div className="flex items-center gap-2 cursor-pointer" onClick={() => scrollToSection('home')}>
+              <img src="/logo.png" alt="StreamFree" className="h-10 w-10 object-contain" />
+              <span className="text-3xl font-bold"><span className="text-white">Stream</span><span className="bg-gradient-to-r from-orange-500 to-yellow-400 bg-clip-text text-transparent">Free</span></span>
+            </div>
+            <nav className="flex items-center gap-1">
+              {['home','movies','live','channels'].map(tab => (
+                <button key={tab} onClick={() => scrollToSection(tab)}
+                  className={`px-4 py-2 text-sm font-medium capitalize transition-all relative cursor-pointer ${activeNav === tab ? 'text-white' : 'text-white/50 hover:text-white/80'}`}>
+                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  {activeNav === tab && (
+                    <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-gradient-to-r from-orange-500 to-yellow-400 rounded-full"></span>
+                  )}
+                </button>
+              ))}
+            </nav>
           </div>
-          
+          <button onClick={() => document.getElementById('search-bar')?.focus()} className="text-white/50 hover:text-white transition-colors">
+            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          </button>
         </div>
       </header>
 
@@ -455,7 +482,7 @@ export default function Home() {
             <input type="text" value={query} onChange={e => setQuery(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSubmit()}
               placeholder='"Tom Cruise action" or "something funny tonight"'
-              className="flex-1 bg-white/5 border-2 border-orange-500/40 rounded-xl px-5 py-4 text-white placeholder-white/30 focus:outline-none focus:border-orange-500 transition-all shadow-[0_0_30px_rgba(234,88,12,0.08)]" />
+              id="search-bar" className="flex-1 bg-white/5 border-2 border-orange-500/40 rounded-xl px-5 py-4 text-white placeholder-white/30 focus:outline-none focus:border-orange-500 transition-all shadow-[0_0_30px_rgba(234,88,12,0.08)]" />
             <button onClick={handleSubmit} disabled={loading || !query.trim()}
               className="bg-gradient-to-r from-orange-600 to-yellow-400 hover:from-orange-500 hover:to-yellow-300 disabled:opacity-40 disabled:cursor-not-allowed px-6 py-4 rounded-xl font-bold text-black transition-all">
               {loading ? '...' : '→'}
@@ -488,7 +515,7 @@ export default function Home() {
         )}
 
         {/* Genre Browse */}
-        <div className="mb-8 border-2 border-orange-500/50 rounded-2xl px-5 pb-5 pt-7 shadow-[0_0_30px_rgba(234,88,12,0.1)] overflow-visible">
+        <div id="genre-section" className="mb-8 border-2 border-orange-500/50 rounded-2xl px-5 pb-5 pt-7 shadow-[0_0_30px_rgba(234,88,12,0.1)] overflow-visible">
           <h2 className="text-lg font-semibold text-white/60 mb-4">Browse by Genre</h2>
           <div className="flex flex-wrap gap-3">
             <button onClick={handleReset}
@@ -506,7 +533,7 @@ export default function Home() {
         </div>
 
         {/* Live Section */}
-        <div className="mb-12 border-2 border-orange-500/50 rounded-2xl px-5 pb-5 pt-7 shadow-[0_0_30px_rgba(234,88,12,0.1)] overflow-visible">
+        <div id="live-section" className="mb-12 border-2 border-orange-500/50 rounded-2xl px-5 pb-5 pt-7 shadow-[0_0_30px_rgba(234,88,12,0.1)] overflow-visible">
           <button onClick={() => setLiveOpen(o => !o)} className="flex items-center gap-2 mb-3 group cursor-pointer">
             <h2 className="text-lg font-semibold text-white/60 group-hover:text-white/90 transition-colors">🔴 Live</h2>
             <span className="text-white/30 text-xs ml-1">{liveOpen ? "▲" : "▼"}</span>
@@ -670,7 +697,7 @@ export default function Home() {
 
           </div>
         {/* Premium Channels */}
-        <div className="mb-12 border-2 border-orange-500/50 rounded-2xl px-5 pb-5 pt-7 shadow-[0_0_30px_rgba(234,88,12,0.1)] overflow-visible">
+        <div id="channels-section" className="mb-12 border-2 border-orange-500/50 rounded-2xl px-5 pb-5 pt-7 shadow-[0_0_30px_rgba(234,88,12,0.1)] overflow-visible">
           <h2 className="text-lg font-semibold text-white/60 mb-4">Premium Channels</h2>
           <div className="flex gap-6 overflow-x-auto pb-3 pt-2">
             {CHANNELS.map(channel => (
