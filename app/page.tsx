@@ -248,7 +248,7 @@ export default function Home() {
   useEffect(() => {
     const interval = setInterval(() => {
       setFeaturedIndex(prev => (prev + 1) % FEATURED.length);
-    }, 8000);
+    }, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -450,28 +450,57 @@ export default function Home() {
       <main className="max-w-7xl mx-auto px-6 py-8">
 
         {/* Hero Banner */}
-        <div className="relative w-full h-[60vh] mb-12 rounded-2xl overflow-hidden">
+        <div className="relative w-full h-[65vh] mb-12 rounded-2xl overflow-hidden">
           <div className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
             style={{ backgroundImage: `url(https://i.ytimg.com/vi/${featured.id}/maxresdefault.jpg)` }} />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/60 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-          <div className="absolute bottom-0 left-0 p-8 max-w-lg">
-            <span className={`text-white text-xs font-bold px-2 py-1 rounded mb-4 inline-block ${RATING_COLORS[featured.rating] || 'bg-gray-600'}`}>
-              {featured.rating}
-            </span>
-            <h2 className="text-4xl font-bold mb-2 leading-tight">{featured.title}</h2>
-            <p className="text-sm text-white/50 mb-3">{featured.duration} • Free on YouTube</p>
-            <p className="text-sm text-white/70 mb-6 line-clamp-3">{featured.description}</p>
-            <a href={`https://www.youtube.com/watch?v=${featured.id}`} target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-white text-black px-6 py-3 rounded-xl font-bold hover:bg-white/90 transition-all">
-              ▶ Watch Free
+          <div className="absolute inset-0 bg-gradient-to-r from-black/98 via-black/75 to-black/20" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+
+          {/* Left Content */}
+          <div className="absolute bottom-0 left-0 p-10 max-w-xl">
+            <span className="text-xs font-bold tracking-widest text-orange-400 uppercase mb-3 block">⭐ Featured</span>
+            <h2 className="text-6xl font-black mb-4 leading-none tracking-tight">{featured.title}</h2>
+            <div className="flex items-center gap-2 mb-4 flex-wrap">
+              <span className={`text-white text-xs font-bold px-2 py-1 rounded ${RATING_COLORS[featured.rating] || 'bg-gray-600'}`}>{featured.rating}</span>
+              <span className="text-white/40 text-xs">•</span>
+              <span className="text-white/60 text-xs bg-white/10 px-2 py-1 rounded">{featured.duration}</span>
+              <span className="text-white/40 text-xs">•</span>
+              <span className="text-white/60 text-xs bg-white/10 px-2 py-1 rounded">Free on YouTube</span>
+            </div>
+            <p className="text-sm text-white/65 mb-8 line-clamp-2 leading-relaxed">{featured.description}</p>
+            <div className="flex gap-3">
+              <a href={`https://www.youtube.com/watch?v=${featured.id}`} target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-600 to-yellow-400 text-black px-7 py-3.5 rounded-xl font-bold hover:from-orange-500 hover:to-yellow-300 transition-all">
+                ▶ Watch Free
+              </a>
+
+            </div>
+          </div>
+
+          {/* Right Poster Cards */}
+          <div className="absolute right-8 top-0 bottom-0 hidden lg:flex items-center gap-4">
+            <a href={`https://www.youtube.com/watch?v=${FEATURED[(featuredIndex + 2) % FEATURED.length].id}`} target="_blank" rel="noopener noreferrer" className="relative w-32 h-52 rounded-xl overflow-hidden opacity-65 border border-white/15 flex-shrink-0 hover:opacity-90 hover:border-orange-500/40 transition-all">
+              <img src={`https://i.ytimg.com/vi/${FEATURED[(featuredIndex + 2) % FEATURED.length].id}/maxresdefault.jpg`} alt="" className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-3">
+                <p className="text-white text-xs font-bold line-clamp-2">{FEATURED[(featuredIndex + 2) % FEATURED.length].title}</p>
+              </div>
+            </a>
+            <a href={`https://www.youtube.com/watch?v=${FEATURED[(featuredIndex + 1) % FEATURED.length].id}`} target="_blank" rel="noopener noreferrer" className="relative w-40 h-64 rounded-2xl overflow-hidden border-2 border-orange-500/50 shadow-[0_0_30px_rgba(234,88,12,0.25)] flex-shrink-0 hover:border-orange-400 hover:shadow-[0_0_40px_rgba(234,88,12,0.4)] transition-all">
+              <img src={`https://i.ytimg.com/vi/${FEATURED[(featuredIndex + 1) % FEATURED.length].id}/maxresdefault.jpg`} alt="" className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-3">
+                <p className="text-white text-xs font-bold line-clamp-2">{FEATURED[(featuredIndex + 1) % FEATURED.length].title}</p>
+              </div>
             </a>
           </div>
-          <div className="absolute bottom-8 right-8 flex gap-2 items-center">
-            {FEATURED.map((_, i) => (
-              <button key={i} onClick={() => setFeaturedIndex(i)}
-                className={`h-2 rounded-full transition-all duration-300 ${i === featuredIndex ? 'bg-white w-6' : 'bg-white/40 w-2'}`} />
-            ))}
+
+          {/* Slide Counter + Progress Bar */}
+          <div className="absolute bottom-4 right-5 bg-black/60 border border-white/15 rounded-full px-3 py-1 flex items-center gap-1">
+            <span className="text-white text-sm font-bold">{featuredIndex + 1}</span>
+            <span className="text-white/30 text-xs">/</span>
+            <span className="text-white/40 text-xs">{FEATURED.length}</span>
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/10">
+            <div key={featuredIndex} className="h-full bg-gradient-to-r from-orange-500 to-yellow-400" style={{animation: 'progressFill 10s linear forwards'}} />
           </div>
         </div>
 
