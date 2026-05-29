@@ -933,12 +933,7 @@ export default function Home() {
           </>
         )}
 
-        {!loading && gridMovies.length === 0 && !searchedFor && !pickResult && (
-          <div className="text-center py-20 text-white/30">
-            <div className="text-6xl mb-4">🎬</div>
-            <p className="text-lg">Search above or pick a genre to get started</p>
-          </div>
-        )}
+
 
         {!loading && gridMovies.length === 0 && searchedFor && !pickResult && (
           <div className="text-center py-20 text-white/40">
