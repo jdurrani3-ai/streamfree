@@ -233,7 +233,7 @@ export default function Home() {
   const [pickResult, setPickResult] = useState<PickResult | null>(null);
   const [hasFreeMovies, setHasFreeMovies] = useState(false);
   const [isTextSearch, setIsTextSearch] = useState(false);
-  const [liveOpen, setLiveOpen] = useState(false);
+  const [liveOpen, setLiveOpen] = useState(true);
   const [activeNav, setActiveNav] = useState('home');
   const decodeHtml = (str: string) => str.replace(/&amp;/g,'&').replace(/&#39;/g,"'").replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
   const [liveVideos, setLiveVideos] = useState<LiveVideo[]>([]);
@@ -258,6 +258,9 @@ export default function Home() {
       setHasFreeMovies(freeMovies.length > 0);
     }
   }, [ytMovies, freeMovies]);
+  useEffect(() => {
+    handleLiveTab('news');
+  }, []);
 
   const featured = FEATURED[featuredIndex];
 
