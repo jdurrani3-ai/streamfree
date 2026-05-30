@@ -70,7 +70,7 @@ async function fetchMoviesForProvider(apiKey: string, omdbKey: string | undefine
     const listRes = await fetch(listUrl.toString());
     if (!listRes.ok) throw new Error(`List failed: ${listRes.status}`);
     const listData = await listRes.json();
-    const titles = (listData.titles || []).slice(0, 8);
+    const titles = (listData.titles || []).slice(0, 12);
     if (!titles.length) throw new Error('No titles');
 
     const movies = await Promise.all(
