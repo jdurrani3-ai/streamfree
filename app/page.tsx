@@ -237,6 +237,8 @@ export default function Home() {
   const trailerRef = useRef<HTMLDivElement>(null);
   const [trailers, setTrailers] = useState<{id:number;title:string;poster:string|null;year:string|null;rating:number;youtubeKey:string;isNew:boolean}[]>([]);
   const [trailersRefreshedAt, setTrailersRefreshedAt] = useState<string|null>(null);
+  const [liveChannels, setLiveChannels] = useState<{name:string;handle:string;short:string;category:string;url:string;thumbnail:string|null}[]>([]);
+  const [activeLiveCategory, setActiveLiveCategory] = useState('Gaming');
   const [activeNav, setActiveNav] = useState('home');
   const decodeHtml = (str: string) => str.replace(/&amp;/g,'&').replace(/&#39;/g,"'").replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
   const [liveVideos, setLiveVideos] = useState<LiveVideo[]>([]);
@@ -244,7 +246,7 @@ export default function Home() {
   const [scoresLoading, setScoresLoading] = useState(false);
   const [scoresError, setScoresError] = useState('');
   const [activeSport, setActiveSport] = useState('nba');
-  const [liveTab, setLiveTab] = useState<'news' | 'sports' | 'scores'>('news');
+  const [liveTab, setLiveTab] = useState<'news' | 'sports' | 'scores' | 'gaming'>('news');
   const [liveLoading, setLiveLoading] = useState(false);
   const [liveError, setLiveError] = useState('');
 
@@ -272,6 +274,10 @@ export default function Home() {
         setTrailersRefreshedAt(data.refreshedAt || null);
       })
       .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/live-channels').then(r => r.json()).then(setLiveChannels).catch(() => {});
   }, []);
 
   const featured = FEATURED[featuredIndex];
@@ -567,15 +573,16 @@ export default function Home() {
             <button onClick={() => handleLiveTab('news')} className={`px-5 py-2 rounded-full text-sm font-medium border transition-all cursor-pointer ${liveTab === 'news' ? 'border-orange-500 bg-orange-500/15 text-white' : 'border-white/15 bg-white/5 text-white/50 hover:border-white/30 hover:text-white/80'}`}>📰 News</button>
             <button onClick={() => handleLiveTab('sports')} className={`px-5 py-2 rounded-full text-sm font-medium border transition-all cursor-pointer ${liveTab === 'sports' ? 'border-orange-500 bg-orange-500/15 text-white' : 'border-white/15 bg-white/5 text-white/50 hover:border-white/30 hover:text-white/80'}`}>🏆 Sports</button>
             <button onClick={() => handleLiveTab('scores')} className={`px-5 py-2 rounded-full text-sm font-medium border transition-all cursor-pointer ${liveTab === 'scores' ? 'border-orange-500 bg-orange-500/15 text-white' : 'border-white/15 bg-white/5 text-white/50 hover:border-white/30 hover:text-white/80'}`}>📊 Scores</button>
+            <button onClick={() => setLiveTab('gaming')} className={`px-5 py-2 rounded-full text-sm font-medium border transition-all cursor-pointer ${liveTab === 'gaming' ? 'border-orange-500 bg-orange-500/15 text-white' : 'border-white/15 bg-white/5 text-white/50 hover:border-white/30 hover:text-white/80'}`}>🎬 Live Channels</button>
           </div>
 
-          {liveTab !== 'scores' && liveLoading && (
+          {liveTab !== 'scores' && liveTab !== 'gaming' && liveLoading && (
             <div className="text-center py-8">
               <div className="inline-block w-6 h-6 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
           )}
 
-          {liveTab !== 'scores' && liveError && (
+          {liveTab !== 'scores' && liveTab !== 'gaming' && liveError && (
             <p className="text-white/40 text-sm py-4">{liveError}</p>
           )}
 
@@ -639,11 +646,62 @@ export default function Home() {
             <p className="text-white/30 text-sm py-4">Click Scores to load live game data.</p>
           )}
 
-          {liveTab !== 'scores' && !liveLoading && !liveError && liveVideos.length === 0 && (
+          {liveTab === 'gaming' && (
+            <div>
+              <div className="flex gap-2 mb-5 flex-wrap">
+                {[
+                  { key: 'Gaming', emoji: '🎮' },
+                  { key: 'Nature & Wildlife', emoji: '🦁' },
+                  { key: 'Racing & Motors', emoji: '🏎️' },
+                  { key: 'Travel', emoji: '✈️' },
+                  { key: 'Science & Space', emoji: '🔭' },
+                ].map(cat => (
+                  <button key={cat.key} onClick={() => setActiveLiveCategory(cat.key)}
+                    className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer ${activeLiveCategory === cat.key ? 'border-orange-500 bg-orange-500/15 text-white' : 'border-white/15 bg-white/5 text-white/40 hover:border-white/30 hover:text-white/70'}`}>
+                    {cat.emoji} {cat.key}
+                  </button>
+                ))}
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                {liveChannels.length === 0 && (
+                  <div className="col-span-5 text-center py-8">
+                    <div className="inline-block w-6 h-6 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                )}
+                {liveChannels.filter(ch => ch.category === activeLiveCategory).map(ch => (
+                  <div key={ch.name} className="group cursor-pointer" onClick={() => window.open(ch.url, '_blank')}>
+                    <div className="relative overflow-hidden rounded-2xl border border-white/10 group-hover:border-orange-500/40 transition-all">
+                      <div className="relative w-full aspect-video bg-zinc-900">
+                        <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
+                          {ch.thumbnail ? (
+                            <img src={ch.thumbnail} alt="" className="w-24 h-24 rounded-full object-cover border-2 border-white/20 shadow-lg" />
+                          ) : (
+                            <span className="text-3xl font-black text-white/30">{ch.short}</span>
+                          )}
+                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        <div className="absolute top-2 left-2">
+                          <span className="text-white text-xs font-bold px-2 py-0.5 rounded-full bg-orange-600/80">{ch.category}</span>
+                        </div>
+                      </div>
+                      <div className="p-3 bg-zinc-900/90">
+                        <p className="text-white text-sm font-bold leading-snug line-clamp-1 mb-2">{ch.name}</p>
+                        <div className="bg-gradient-to-r from-orange-600 to-yellow-400 rounded-full py-1.5 text-center">
+                          <span className="text-black text-xs font-bold">▶ Watch Live</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {liveTab !== 'scores' && liveTab !== 'gaming' && !liveLoading && !liveError && liveVideos.length === 0 && (
             <p className="text-white/30 text-sm py-4">Click News or Sports to load live streams.</p>
           )}
 
-          {liveTab !== 'scores' && !liveLoading && liveTab === 'news' && (
+          {liveTab === 'news' && !liveLoading && (
             <div className="mb-6">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
@@ -682,7 +740,7 @@ export default function Home() {
             </div>
           )}
 
-          {liveTab !== 'scores' && !liveLoading && liveVideos.length > 0 && (
+          {liveTab !== 'scores' && liveTab !== 'gaming' && !liveLoading && liveVideos.length > 0 && (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {liveVideos.map(video => {
                 const initial = video.channelTitle?.[0]?.toUpperCase() || '?';
