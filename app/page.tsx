@@ -235,7 +235,8 @@ export default function Home() {
   const [isTextSearch, setIsTextSearch] = useState(false);
   const [liveOpen, setLiveOpen] = useState(true);
   const trailerRef = useRef<HTMLDivElement>(null);
-  const [trailers, setTrailers] = useState<{id:number;title:string;poster:string|null;year:string|null;rating:number;youtubeKey:string}[]>([]);
+  const [trailers, setTrailers] = useState<{id:number;title:string;poster:string|null;year:string|null;rating:number;youtubeKey:string;isNew:boolean}[]>([]);
+  const [trailersRefreshedAt, setTrailersRefreshedAt] = useState<string|null>(null);
   const [activeNav, setActiveNav] = useState('home');
   const decodeHtml = (str: string) => str.replace(/&amp;/g,'&').replace(/&#39;/g,"'").replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
   const [liveVideos, setLiveVideos] = useState<LiveVideo[]>([]);
@@ -264,7 +265,13 @@ export default function Home() {
     handleLiveTab('news');
   }, []);
   useEffect(() => {
-    fetch('/api/trailers').then(r => r.json()).then(setTrailers).catch(() => {});
+    fetch('/api/trailers')
+      .then(r => r.json())
+      .then(data => {
+        setTrailers(data.movies || []);
+        setTrailersRefreshedAt(data.refreshedAt || null);
+      })
+      .catch(() => {});
   }, []);
 
   const featured = FEATURED[featuredIndex];
@@ -784,8 +791,8 @@ export default function Home() {
           <div className="mb-12">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-xl font-bold text-white">🎬 Popular Trailers</h2>
-                <p className="text-white/40 text-sm mt-1">Latest trailers from the most popular movies right now.</p>
+                <div className="flex items-center gap-2 flex-wrap"><h2 className="text-xl font-bold text-white">🎬 Popular & New Trailers</h2><span className="text-xs font-bold bg-orange-500/20 text-orange-400 border border-orange-500/30 px-2 py-0.5 rounded-full">↻ Updated Daily</span></div>
+                <p className="text-white/40 text-sm mt-1">Popular hits + latest releases — refreshes every 24h.</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -804,7 +811,7 @@ export default function Home() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
                       <div className="bg-gradient-to-r from-orange-600 to-yellow-400 text-black text-xs font-bold px-3 py-1.5 rounded-full">▶ Trailer</div>
                     </div>
-                    <div className="absolute top-2 right-2 bg-black/60 text-yellow-400 text-xs font-bold px-2 py-0.5 rounded">★ {trailer.rating}</div>
+                    <div className="absolute top-2 right-2 flex flex-col items-end gap-1"><div className="bg-black/60 text-yellow-400 text-xs font-bold px-2 py-0.5 rounded">★ {trailer.rating}</div>{trailer.isNew && <div className="bg-green-600 text-white text-xs font-bold px-1.5 py-0.5 rounded">NEW</div>}</div>
                   </div>
                   <p className="text-white/80 text-xs font-medium mt-2 line-clamp-2 leading-tight">{trailer.title}</p>
                   <p className="text-white/35 text-xs mt-0.5">{trailer.year}</p>

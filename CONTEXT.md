@@ -13,6 +13,7 @@ Repo: github.com/jdurrani3-ai/streamfree
 - Phase 4: Live TV & Add-On Channels
 - TMDB trailer section
 - AI search bar removed (restore from commit 9e0dd07)
+- Trailers: blended popular + now_playing, 24h cache, NEW badges, Updated Daily label
 
 ## Pending
 - AI Pick orphaned section cleanup
