@@ -519,19 +519,7 @@ export default function Home() {
         </div>
 
         {/* Search Bar */}
-        <div className="mb-12 max-w-2xl mx-auto">
-          <p className="text-center text-white/40 text-sm mb-3">Search for a movie, describe a mood, or name an actor</p>
-          <div className="flex gap-3">
-            <input type="text" value={query} onChange={e => setQuery(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-              placeholder='"Tom Cruise action" or "something funny tonight"'
-              id="search-bar" className="flex-1 bg-white/5 border-2 border-orange-500/40 rounded-xl px-5 py-4 text-white placeholder-white/30 focus:outline-none focus:border-orange-500 transition-all shadow-[0_0_30px_rgba(234,88,12,0.08)]" />
-            <button onClick={handleSubmit} disabled={loading || !query.trim()}
-              className="bg-gradient-to-r from-orange-600 to-yellow-400 hover:from-orange-500 hover:to-yellow-300 disabled:opacity-40 disabled:cursor-not-allowed px-6 py-4 rounded-xl font-bold text-black transition-all">
-              {loading ? '...' : '→'}
-            </button>
-          </div>
-        </div>
+
 
         {/* AI Pick */}
         {pickResult && (
