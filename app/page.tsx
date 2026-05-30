@@ -320,6 +320,9 @@ export default function Home() {
   };
 
   const handleSubmit = async () => {
+    setTimeout(() => {
+      document.getElementById('results-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 300);
     if (!query.trim()) return;
     setLoading(true);
     setError('');
