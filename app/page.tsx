@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface YouTubeMovie {
   id: string;
@@ -234,6 +234,8 @@ export default function Home() {
   const [hasFreeMovies, setHasFreeMovies] = useState(false);
   const [isTextSearch, setIsTextSearch] = useState(false);
   const [liveOpen, setLiveOpen] = useState(true);
+  const trailerRef = useRef<HTMLDivElement>(null);
+  const [trailers, setTrailers] = useState<{id:number;title:string;poster:string|null;year:string|null;rating:number;youtubeKey:string}[]>([]);
   const [activeNav, setActiveNav] = useState('home');
   const decodeHtml = (str: string) => str.replace(/&amp;/g,'&').replace(/&#39;/g,"'").replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
   const [liveVideos, setLiveVideos] = useState<LiveVideo[]>([]);
@@ -260,6 +262,9 @@ export default function Home() {
   }, [ytMovies, freeMovies]);
   useEffect(() => {
     handleLiveTab('news');
+  }, []);
+  useEffect(() => {
+    fetch('/api/trailers').then(r => r.json()).then(setTrailers).catch(() => {});
   }, []);
 
   const featured = FEATURED[featuredIndex];
@@ -786,6 +791,45 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Trailers Section */}
+        {trailers.length > 0 && (
+          <div className="mb-12">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-xl font-bold text-white">🎬 Popular Trailers</h2>
+                <p className="text-white/40 text-sm mt-1">Latest trailers from the most popular movies right now.</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div ref={trailerRef} className="flex gap-4 overflow-x-auto pb-3 flex-1" style={{scrollbarWidth:'none'}}>
+              {trailers.map(trailer => (
+                <a key={trailer.id} href={`https://www.youtube.com/watch?v=${trailer.youtubeKey}`} target="_blank" rel="noopener noreferrer"
+                  className="flex-shrink-0 w-40 group cursor-pointer">
+                  <div className="relative h-56 rounded-xl overflow-hidden border border-white/10 group-hover:border-orange-500/50 transition-all">
+                    {trailer.poster ? (
+                      <img src={trailer.poster} alt={trailer.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-zinc-900 flex items-center justify-center">
+                        <span className="text-4xl">🎬</span>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
+                      <div className="bg-gradient-to-r from-orange-600 to-yellow-400 text-black text-xs font-bold px-3 py-1.5 rounded-full">▶ Trailer</div>
+                    </div>
+                    <div className="absolute top-2 right-2 bg-black/60 text-yellow-400 text-xs font-bold px-2 py-0.5 rounded">★ {trailer.rating}</div>
+                  </div>
+                  <p className="text-white/80 text-xs font-medium mt-2 line-clamp-2 leading-tight">{trailer.title}</p>
+                  <p className="text-white/35 text-xs mt-0.5">{trailer.year}</p>
+                </a>
+              ))}
+              </div>
+              <button onClick={() => trailerRef.current?.scrollBy({ left: 600, behavior: 'smooth' })}
+                className="flex-shrink-0 w-10 h-10 rounded-full bg-white/10 border border-white/20 hover:bg-white/20 hover:border-orange-500/50 transition-all flex items-center justify-center text-white/60 hover:text-white text-lg mb-3">
+                ›
+              </button>
+            </div>
+          </div>
+        )}
         <div id="results-section"></div>
         {loading && (
           <div className="text-center py-20">
