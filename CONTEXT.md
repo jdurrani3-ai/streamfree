@@ -1,5 +1,5 @@
 # StreamFree Dev Context
-Last commit: aa5514a
+Last commit: 2472ff8
 Live: https://streamfree-six.vercel.app
 Repo: github.com/jdurrani3-ai/streamfree
 
@@ -19,6 +19,8 @@ Repo: github.com/jdurrani3-ai/streamfree
 - All thumbnails hardcoded — zero API dependency
 - Sports bleed into Live Channels tab fixed
 - Orphaned search icon removed from nav
+- Scrolling ticker banner — orange gradient, above nav, easy text updates
+- Recently Added panel — 3 items, deep links, 30-day expiry, pulsing dot indicator
 
 ## Pending
 - AI Pick orphaned section cleanup
@@ -28,10 +30,18 @@ Repo: github.com/jdurrani3-ai/streamfree
 
 ## Adding new channels (workflow)
 1. Get: channel name + @handle/live URL + category
-2. Run curl to get thumbnail URL
+2. Run curl in zsh to get thumbnail URL
 3. Add one line to data/live-channels.ts
 4. git add -A && git commit && git push
 
+## Adding to Recently Added panel (workflow)
+Say: "Add to Recently Added: [title] | [description] | [type] | [sectionId if applicable]"
+I give you one node command to run in zsh terminal.
+
+## Updating ticker banner
+Say: "Update banner text to: [new message]"
+I give you one sed command to run in zsh terminal.
+
 ## Terminal rules
-- node terminal = npm run dev (server commands only)
-- zsh terminal = everything else (git, curl, cat, node patch.js)
+- node terminal = npm run dev (start/stop server only)
+- zsh terminal = everything else (git, curl, cat, node commands)

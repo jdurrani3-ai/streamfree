@@ -468,7 +468,7 @@ export default function Home() {
               {['home','movies','live','channels'].map(tab => (
                 <button key={tab} onClick={() => scrollToSection(tab)}
                   className={`px-4 py-2 text-sm font-medium capitalize transition-all relative cursor-pointer ${activeNav === tab ? 'text-white' : 'text-white/50 hover:text-white/80'}`}>
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  {tab === 'channels' ? 'Add-On Channels' : tab.charAt(0).toUpperCase() + tab.slice(1)}
                   {activeNav === tab && (
                     <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-gradient-to-r from-orange-500 to-yellow-400 rounded-full"></span>
                   )}
