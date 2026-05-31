@@ -449,7 +449,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen text-white" style={{background: 'linear-gradient(135deg, #0d1117 0%, #0a0a0f 50%, #111318 100%)'}}>
-      <header className="border-b border-white/10 px-6 py-4 sticky top-0 z-50 backdrop-blur-md bg-black/60">
+      <div className="w-full overflow-hidden sticky top-0 z-[51]" style={{background:"linear-gradient(90deg,#ea580c,#f59e0b,#ea580c)"}}><div className="animate-ticker flex whitespace-nowrap py-2.5"><span className="text-black text-sm font-bold px-12">🎬 Welcome to StreamFree — all content, live or on demand, is 100% free. No subscriptions. No hidden fees. Just press play. ✦ Movies, live news, sports, gaming, nature, travel and more — always free, always streaming.</span><span className="text-black text-sm font-bold px-12">🎬 Welcome to StreamFree — all content, live or on demand, is 100% free. No subscriptions. No hidden fees. Just press play. ✦ Movies, live news, sports, gaming, nature, travel and more — always free, always streaming.</span></div></div><header className="border-b border-white/10 px-6 py-4 sticky top-0 z-50 backdrop-blur-md bg-black/60">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-8">
             <div className="flex items-center gap-2 cursor-pointer" onClick={() => scrollToSection('home')}>
