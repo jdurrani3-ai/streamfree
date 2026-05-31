@@ -474,7 +474,7 @@ export default function Home() {
                   )}
                 </button>
               ))}
-            </nav>
+            </nav><a href="/podcasts" className="px-4 py-2 text-sm font-medium text-white/50 hover:text-white/80 transition-colors">🎙️ Podcasts</a>
           </div>
           <div className="relative">
             <button onClick={() => setRecentlyAddedOpen(o => !o)} className="flex items-center gap-2 px-4 py-2 rounded-full border border-orange-500/50 bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 text-sm font-bold transition-all">
