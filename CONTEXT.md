@@ -1,10 +1,11 @@
 # StreamFree Dev Context
-Last commit: 2472ff8
+Last commit: 7c1b197
 Live: https://streamfree-six.vercel.app
 Repo: github.com/jdurrani3-ai/streamfree
 
 ## APIs (keys in .env.local and Vercel env vars)
 - YouTube, Anthropic, OMDB, Watchmode, TMDB
+- SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET (rotate credentials — shared in chat)
 
 ## Completed
 - Phase 1: Nav bar
@@ -14,34 +15,28 @@ Repo: github.com/jdurrani3-ai/streamfree
 - TMDB trailer section
 - AI search bar removed (restore from commit 9e0dd07)
 - Trailers: blended popular + now_playing, 24h cache, NEW badges, Updated Daily label
-- Live Channels: 20 hardcoded channels across 5 categories (Gaming, Nature & Wildlife, Racing & Motors, Travel, Science & Space)
+- Live Channels: 20 hardcoded channels across 5 categories
 - Unified data/live-channels.ts — one line per channel going forward
 - All thumbnails hardcoded — zero API dependency
 - Sports bleed into Live Channels tab fixed
 - Orphaned search icon removed from nav
-- Scrolling ticker banner — orange gradient, above nav, easy text updates
-- Recently Added panel — 3 items, deep links, 30-day expiry, pulsing dot indicator
+- Scrolling ticker banner — orange gradient, above nav
+- Recently Added panel — deep links, 30-day expiry, pulsing dot
+- Nav: Channels renamed to Add-On Channels
+- Podcasts page (/podcasts) — Spotify search, shared iframe player, show drill-down, air dates
 
 ## Pending
 - AI Pick orphaned section cleanup
 - TMDB expand (replace OMDB, trending)
 - FilmRise YouTube channels
-- Live Channels tab button visual enhancement (show category emojis as preview)
+- Live Channels tab button visual enhancement
+- Rotate Spotify credentials (CLIENT_ID + CLIENT_SECRET exposed in chat)
 
-## Adding new channels (workflow)
-1. Get: channel name + @handle/live URL + category
-2. Run curl in zsh to get thumbnail URL
-3. Add one line to data/live-channels.ts
-4. git add -A && git commit && git push
-
-## Adding to Recently Added panel (workflow)
-Say: "Add to Recently Added: [title] | [description] | [type] | [sectionId if applicable]"
-I give you one node command to run in zsh terminal.
-
-## Updating ticker banner
-Say: "Update banner text to: [new message]"
-I give you one sed command to run in zsh terminal.
+## Workflows
+- Add channel: name + @handle/live + category → I get thumbnail URL → one line in data/live-channels.ts
+- Add to Recently Added: "Add to Recently Added: [title] | [desc] | [type] | [sectionId]"
+- Update ticker: "Update banner text to: [message]"
 
 ## Terminal rules
-- node terminal = npm run dev (start/stop server only)
-- zsh terminal = everything else (git, curl, cat, node commands)
+- node terminal = npm run dev (start/stop only)
+- zsh terminal = everything else

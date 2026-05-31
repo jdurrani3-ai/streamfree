@@ -160,6 +160,7 @@ const RECENTLY_ADDED = [
   { id: '1', title: 'Popular & New Trailers', desc: 'Blended popular hits and new releases — refreshes every 24h with NEW badges.', type: 'Feature', emoji: '🎬', addedAt: '2026-05-30', sectionId: 'trailers-section' },
   { id: '2', title: 'Live Channels — 5 Categories', desc: '20 live channels across Gaming, Nature & Wildlife, Racing & Motors, Travel, and Science & Space.', type: 'Feature', emoji: '📺', addedAt: '2026-05-30', sectionId: 'live-section' },
   { id: '3', title: 'Scrolling Ticker Banner', desc: 'Live scrolling brand message at the top of the page.', type: 'Enhancement', emoji: '📣', addedAt: '2026-05-30' },
+  { id: '4', title: 'Podcasts Page', desc: 'Full podcast episodes powered by Spotify — search any show, listen free, no account needed.', type: 'Feature', emoji: '🎙️', addedAt: '2026-05-30', pageLink: '/podcasts' },
 ];
 const RA_EXPIRY_DAYS = 30;
 
