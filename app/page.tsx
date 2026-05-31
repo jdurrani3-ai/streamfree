@@ -156,6 +156,13 @@ const CHANNELS = [
   { name: 'Criterion', short: 'CC', color: 'bg-stone-800', url: 'https://www.criterionchannel.com', desc: 'Classic Cinema' },
 ];
 
+const RECENTLY_ADDED = [
+  { id: '1', title: 'Popular & New Trailers', desc: 'Blended popular hits and new releases — refreshes every 24h with NEW badges.', type: 'Feature', emoji: '🎬', addedAt: '2026-05-30', sectionId: 'trailers-section' },
+  { id: '2', title: 'Live Channels — 5 Categories', desc: '20 live channels across Gaming, Nature & Wildlife, Racing & Motors, Travel, and Science & Space.', type: 'Feature', emoji: '📺', addedAt: '2026-05-30', sectionId: 'live-section' },
+  { id: '3', title: 'Scrolling Ticker Banner', desc: 'Live scrolling brand message at the top of the page.', type: 'Enhancement', emoji: '📣', addedAt: '2026-05-30' },
+];
+const RA_EXPIRY_DAYS = 30;
+
 const RATING_COLORS: Record<string, string> = {
   'G': 'bg-green-600', 'PG': 'bg-blue-600', 'PG-13': 'bg-yellow-600',
   'R': 'bg-red-600', 'NC-17': 'bg-red-800',
@@ -237,6 +244,7 @@ export default function Home() {
   const trailerRef = useRef<HTMLDivElement>(null);
   const [trailers, setTrailers] = useState<{id:number;title:string;poster:string|null;year:string|null;rating:number;youtubeKey:string;isNew:boolean}[]>([]);
   const [trailersRefreshedAt, setTrailersRefreshedAt] = useState<string|null>(null);
+  const [recentlyAddedOpen, setRecentlyAddedOpen] = useState(false);
   const [liveChannels, setLiveChannels] = useState<{name:string;handle:string;short:string;category:string;url:string;thumbnail:string|null}[]>([]);
   const [activeLiveCategory, setActiveLiveCategory] = useState('Gaming');
   const [activeNav, setActiveNav] = useState('home');
@@ -467,6 +475,48 @@ export default function Home() {
                 </button>
               ))}
             </nav>
+          </div>
+          <div className="relative">
+            <button onClick={() => setRecentlyAddedOpen(o => !o)} className="flex items-center gap-2 px-4 py-2 rounded-full border border-orange-500/50 bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 text-sm font-bold transition-all">
+              🆕 Recently Added
+              {RECENTLY_ADDED.some(i => (Date.now() - new Date(i.addedAt).getTime()) / 86400000 <= 7) && <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse inline-block ml-1"></span>}
+            </button>
+            {recentlyAddedOpen && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setRecentlyAddedOpen(false)} />
+                <div className="absolute right-0 top-full mt-2 w-96 bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden">
+                  <div className="p-4 border-b border-white/10 flex items-center justify-between">
+                    <h3 className="text-white font-bold text-sm">🆕 Recently Added</h3>
+                    <button onClick={() => setRecentlyAddedOpen(false)} className="text-white/40 hover:text-white text-xs">✕</button>
+                  </div>
+                  <div className="max-h-96 overflow-y-auto">
+                    {RECENTLY_ADDED.filter(i => (Date.now() - new Date(i.addedAt).getTime()) / 86400000 <= RA_EXPIRY_DAYS).map(item => {
+                      const days = Math.floor((Date.now() - new Date(item.addedAt).getTime()) / 86400000);
+                      const isNew = days <= 7;
+                      return (
+                        <div key={item.id} className="p-4 border-b border-white/5 hover:bg-white/5 transition-all">
+                          <div className="flex items-start gap-3">
+                            <span className="text-2xl flex-shrink-0">{item.emoji}</span>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                <span className="text-white text-sm font-bold">{item.title}</span>
+                                {isNew && <span className="text-xs bg-orange-500/20 text-orange-400 px-1.5 py-0.5 rounded-full font-bold">NEW</span>}
+                                <span className="text-xs bg-white/10 text-white/40 px-1.5 py-0.5 rounded-full">{item.type}</span>
+                              </div>
+                              <p className="text-white/50 text-xs leading-relaxed mb-2">{item.desc}</p>
+                              <div className="flex items-center justify-between">
+                                <span className="text-white/30 text-xs">{days === 0 ? "Today" : days === 1 ? "1 day ago" : days + " days ago"}</span>
+                                {item.sectionId && <button onClick={() => { document.getElementById(item.sectionId || "")?.scrollIntoView({behavior:"smooth"}); setRecentlyAddedOpen(false); }} className="text-orange-400 text-xs font-bold hover:text-orange-300">View Section →</button>}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
           
         </div>
@@ -843,6 +893,7 @@ export default function Home() {
         </div>
 
         {/* Trailers Section */}
+        <div id="trailers-section"></div>
         {trailers.length > 0 && (
           <div className="mb-12">
             <div className="flex items-center justify-between mb-4">
